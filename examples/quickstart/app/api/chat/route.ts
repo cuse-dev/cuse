@@ -69,7 +69,7 @@ export async function POST(req: Request) {
                 type: 'image',
                 image: await screenshot
                   .arrayBuffer()
-                  .then((buffer) => Buffer.from(buffer)),
+                  .then((buffer) => Buffer.from(buffer).toString('base64')),
               };
             case 'key':
               if (!text) {
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
             : [
                 {
                   type: 'image',
-                  data: result.image.toString('base64'),
+                  data: result.image,
                   mimeType: 'image/png',
                 },
               ];
