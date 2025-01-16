@@ -23,48 +23,50 @@ const Navbar = () => {
   return (
     <section className="p-4">
       <div className="w-full">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <nav className="flex items-center">
+          <div className="flex-1 flex items-center gap-4">
             <img src="/logo.svg" alt="logo" className="w-8 dark:invert" />
             <span className="text-3xl font-semibold">Cuse</span>
           </div>
-          <NavigationMenu className="hidden md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="#features"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Features
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="#benefits"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Benefits
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="#community"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Community
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  href="#roadmap"
-                  className={navigationMenuTriggerStyle()}
-                >
-                  Roadmap
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <div className="hidden items-center gap-4 md:flex">
+          <div className="flex-1 flex justify-center">
+            <NavigationMenu className="hidden md:block">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="#features"
+                    className={navigationMenuTriggerStyle()}
+                  >
+                    Features
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="#benefits"
+                    className={navigationMenuTriggerStyle()}
+                  >
+                    Benefits
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="#community"
+                    className={navigationMenuTriggerStyle()}
+                  >
+                    Community
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="#roadmap"
+                    className={navigationMenuTriggerStyle()}
+                  >
+                    Roadmap
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+          <div className="flex-1 hidden items-center gap-4 md:flex justify-end">
             <ThemeToggle />
             <Button variant="outline" asChild>
               <a href={process.env.NEXT_PUBLIC_DOCS_URL} target="_blank">
