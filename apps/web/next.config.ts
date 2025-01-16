@@ -1,7 +1,11 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'standalone',
+  optimizeFonts: true,
+  images: {
+    domains: ['shadcnblocks.com'],
+  },
 };
 
 export default nextConfig;
