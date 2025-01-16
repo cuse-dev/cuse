@@ -15,7 +15,7 @@ npm install
 2. Start the computer:
 
 ```bash
-npx @cuse/cli start
+npx @cusedev/cli start
 ```
 
 3. Run the example:

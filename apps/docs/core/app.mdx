@@ -12,7 +12,7 @@ Apps in Cuse are modular components that can be installed and run on a virtual c
 To create a custom app, extend the `App` class and implement the required methods:
 
 ```typescript
-import { App, AppConfig } from '@cuse/core';
+import { App, AppConfig } from '@cusedev/core';
 
 class CustomApp extends App {
   constructor() {
@@ -108,7 +108,7 @@ class CustomApp extends App {
 Here's a complete example of a browser app that installs and controls a web browser:
 
 ```typescript
-import { App } from '@cuse/core';
+import { App } from '@cusedev/core';
 
 class BrowserApp extends App {
   constructor() {

@@ -17,10 +17,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const packageManagers = {
-  npx: 'npx @cuse/cli init',
-  pnpm: 'pnpm create @cuse/cli init',
-  yarn: 'yarn create @cuse/cli init',
-  bun: 'bunx @cuse/cli init',
+  npx: 'npx @cusedev/cli init',
+  pnpm: 'pnpm create @cusedev/cli init',
+  yarn: 'yarn create @cusedev/cli init',
+  bun: 'bunx @cusedev/cli init',
 } as const;
 
 type PackageManager = keyof typeof packageManagers;

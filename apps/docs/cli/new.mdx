@@ -6,7 +6,7 @@ description: 'Create a new virtual computer'
 ## Usage
 
 ```bash
-npx @cuse/cli new [computer-name] [options]
+npx @cusedev/cli new [computer-name] [options]
 ```
 
 ## Description
@@ -32,13 +32,13 @@ If options are not provided, the command will prompt you for:
 
 ```bash
 # Create a new computer with interactive prompts
-npx @cuse/cli new
+npx @cusedev/cli new
 
 # Create a computer with a specific name
-npx @cuse/cli new my-computer
+npx @cusedev/cli new my-computer
 
 # Create a computer with specific platform
-npx @cuse/cli new my-computer --platform linux
+npx @cusedev/cli new my-computer --platform linux
 ```
 
 ## Output
@@ -53,7 +53,7 @@ After successful creation, you'll see:
 ## Troubleshooting
 
 If services fail to start, the command will suggest:
-1. Checking if the proxy is running: `npx @cuse/cli proxy status`
+1. Checking if the proxy is running: `npx @cusedev/cli proxy status`
 2. Checking container logs: `docker logs <container-id>`
 3. Checking proxy logs: `docker logs cuse-proxy`
-4. Trying to restart: `npx @cuse/cli start <computer-name>`
+4. Trying to restart: `npx @cusedev/cli start <computer-name>`
