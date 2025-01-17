@@ -1,4 +1,4 @@
-import * as client from './generated';
+import * as client from './client';
 import { DisplayInterface, SystemConfig } from './types';
 import { handleResponse } from './utils';
 

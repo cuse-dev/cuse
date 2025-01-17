@@ -1,5 +1,5 @@
-import { SystemConfig } from './types';
-import * as client from './generated';
+import { SystemConfig, UndoEditParams } from './types';
+import * as client from './client';
 import {
   EditorInterface,
   ViewFileParams,
@@ -22,12 +22,12 @@ export class Editor implements EditorInterface {
    * @returns Promise with file contents
    * @throws Error if file viewing fails
    */
-  async viewFile(params: ViewFileParams): Promise<string> {
+  async viewFile({ path, viewRange }: ViewFileParams): Promise<string> {
     const response = await handleResponse(
       client.editorViewFile({
         body: {
-          path: params.path,
-          ...(params.viewRange ? { view_range: params.viewRange } : {}),
+          path: path,
+          ...(viewRange ? { view_range: viewRange } : {}),
         },
       })
     );
@@ -44,12 +44,12 @@ export class Editor implements EditorInterface {
    * @param params Parameters containing file path and optional content
    * @throws Error if file creation fails
    */
-  async createFile(params: CreateFileParams): Promise<void> {
+  async createFile({ path, content }: CreateFileParams): Promise<void> {
     await handleResponse(
       client.editorCreateFile({
         body: {
-          path: params.path,
-          ...(params.content ? { file_text: params.content } : {}),
+          path: path,
+          ...(content ? { file_text: content } : {}),
         },
       })
     );
@@ -60,13 +60,17 @@ export class Editor implements EditorInterface {
    * @param params Parameters containing file path and strings to replace
    * @throws Error if string replacement fails
    */
-  async replaceString(params: ReplaceStringParams): Promise<void> {
+  async replaceString({
+    path,
+    oldStr,
+    newStr,
+  }: ReplaceStringParams): Promise<void> {
     await handleResponse(
       client.editorReplaceString({
         body: {
-          path: params.path,
-          old_str: params.oldStr,
-          new_str: params.newStr,
+          path: path,
+          old_str: oldStr,
+          new_str: newStr,
         },
       })
     );
@@ -77,13 +81,13 @@ export class Editor implements EditorInterface {
    * @param params Parameters containing file path, line number and text
    * @throws Error if text insertion fails
    */
-  async insertText(params: InsertTextParams): Promise<void> {
+  async insertText({ path, line, text }: InsertTextParams): Promise<void> {
     await handleResponse(
       client.editorInsertText({
         body: {
-          path: params.path,
-          text: params.text,
-          insert_line: params.line,
+          path,
+          text,
+          insert_line: line,
         },
       })
     );
@@ -91,9 +95,16 @@ export class Editor implements EditorInterface {
 
   /**
    * Undo last edit
+   * @param params Parameters containing file path
    * @throws Error if undo fails
    */
-  async undoLastEdit(): Promise<void> {
-    await handleResponse(client.editorUndoLastEdit());
+  async undoLastEdit({ path }: UndoEditParams): Promise<void> {
+    await handleResponse(
+      client.editorUndoLastEdit({
+        body: {
+          path,
+        },
+      })
+    );
   }
 }
