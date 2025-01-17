@@ -3,6 +3,7 @@ import { IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from "@vercel/analytics/react"
+import { Toaster } from '@/components/ui/sonner';
 
 const ibmPlexMono = IBM_Plex_Mono({
   variable: '--font-ibm-plex-mono',
@@ -31,7 +32,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <main>{children}</main>
+          <Toaster />
           <Analytics />
         </ThemeProvider>
       </body>

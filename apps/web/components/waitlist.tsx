@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner"
 
 const Waitlist = () => {
     const handleSubmit = async (e: React.FormEvent) => {
@@ -16,9 +17,9 @@ const Waitlist = () => {
             body: JSON.stringify({ email }),
         });
         if (response.ok) {
-            alert('Thanks for subscribing!');
+            toast.success('Thanks for subscribing!');
         } else {
-            alert('Something went wrong. Please try again.');
+            toast.error('Something went wrong. Please try again.');
         }
     };
   return (
