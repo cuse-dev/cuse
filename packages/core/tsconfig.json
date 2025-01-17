@@ -5,6 +5,9 @@
     "rootDir": ".",
     "composite": true,
     "incremental": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "verbatimModuleSyntax": false
   },
   "include": ["*.ts", "src/**/*.ts", "src/**/*.tsx"],

@@ -18,14 +18,21 @@
   },
   "private": false,
   "type": "module",
-  "main": "dist/index.js",
-  "module": "index.ts",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "bun build index.ts --outdir dist && tsc --project tsconfig.json",
+    "build": "rm -rf dist && bun build index.ts --outdir dist --target node --minify && tsc --emitDeclarationOnly",
     "check-types": "tsc --noEmit",
     "generate-client": "bunx @hey-api/openapi-ts -c @hey-api/client-fetch -i src/openapi.json -o src/client/generated"
   },
