@@ -1,15 +1,19 @@
 name: NPM Publish Core
 
 on:
+  workflow_dispatch: 
   push:
     branches:
       - main
     paths:
       - 'packages/core/**'
 
+concurrency:
+  group: npm-publish
+
 jobs:
   publish:
-    name: Publish to NPM
+    name: Publish Core to NPM
     runs-on: ubuntu-latest
     permissions:
       contents: write

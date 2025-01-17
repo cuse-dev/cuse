@@ -1,15 +1,19 @@
 name: NPM Publish CLI
 
 on:
+  workflow_dispatch: 
   push:
     branches:
       - main
     paths:
       - 'packages/cli/**'
 
+concurrency:
+  group: npm-publish
+
 jobs:
   publish:
-    name: Publish to NPM
+    name: Publish CLI to NPM
     runs-on: ubuntu-latest
     permissions:
       contents: write
