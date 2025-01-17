@@ -96,52 +96,12 @@ export const newCommand: CommandModule<NewOptions> = {
 
     const computer = await startComputer(os, identifier);
 
-    // Check if endpoints are accessible
-    console.info('\nSetting up cuse API Service');
-    const apiWorking = await checkEndpoint(
-      computer.api,
-      `Starting computer ${computer.identifier}...`
-    );
-    if (apiWorking) {
-      console.info('\n✓ cuse API is ready');
-    } else {
-      console.warn('\n⚠️ cuse API is not responding');
-    }
+    addComputer({
+      identifier,
+      os,
+      template: argv.template,
+    });
 
-    console.info('\nSetting up noVNC Service');
-    const vncWorking = await checkEndpoint(computer.novnc);
-    if (vncWorking) {
-      console.info('\n✓ noVNC is ready');
-    } else {
-      console.warn('\n⚠️ noVNC is not responding');
-    }
-
-    if (!apiWorking || !vncWorking) {
-      console.info('\nTroubleshooting steps:');
-      console.info('1. Check if the proxy is running: cuse proxy status');
-      console.info(
-        '2. Check container logs: docker logs',
-        computer.containerId
-      );
-      console.info('3. Check proxy logs: docker logs cuse-proxy');
-      console.info('4. Try restarting: cuse start', identifier);
-
-      process.exit(1);
-    } else {
-      console.info(`\n${os[0].toUpperCase() + os.slice(1)} computer started!`);
-      console.info(`Container: ${computer.containerId}`);
-      console.info(`API: ${computer.api || 'No API URL available'}`);
-      console.info(`noVNC: ${computer.novnc || 'No noVNC URL available'}`);
-      console.info(`VNC: ${computer.api}/vnc || "No VNC URL available"`);
-
-      // Add computer to config
-      addComputer({
-        identifier,
-        os,
-        template: argv.template,
-      });
-
-      printComputerTable([computer]);
-    }
+    printComputerTable([computer]);
   },
 };

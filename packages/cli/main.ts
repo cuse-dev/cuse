@@ -9,6 +9,7 @@ import {
   startCommand,
   initCommand,
   stopCommand,
+  restartCommand,
 } from './commands';
 
 yargs(hideBin(process.argv))
@@ -21,6 +22,7 @@ yargs(hideBin(process.argv))
   .command(startCommand)
   .command(initCommand)
   .command(stopCommand)
+  .command(restartCommand)
   .version()
   .help()
   .alias('help', 'h')
