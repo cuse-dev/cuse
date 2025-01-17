@@ -6,3 +6,4 @@ export * from './new';
 export * from './start';
 export * from './init';
 export * from './stop';
+export * from './restart';

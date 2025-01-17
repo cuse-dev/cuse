@@ -29,27 +29,30 @@ export function getConfigPath(): string {
   return path.join(process.cwd(), 'cuse.config.yml');
 }
 
-export function configExists(): boolean {
-  return fs.existsSync(getConfigPath());
+export function configExists(configPath?: string): boolean {
+  return fs.existsSync(configPath || getConfigPath());
 }
 
-export function readConfig(): CuseConfig {
-  const configPath = getConfigPath();
-  if (!configExists()) {
+export function readConfig(configPath?: string): CuseConfig {
+  const cp = configPath || getConfigPath();
+  if (!configExists(cp)) {
     return DEFAULT_CONFIG;
   }
 
-  const configFile = fs.readFileSync(configPath, 'utf8');
+  const configFile = fs.readFileSync(cp, 'utf8');
   return yaml.parse(configFile);
 }
 
-export function writeConfig(config: CuseConfig): void {
-  const configPath = getConfigPath();
-  fs.writeFileSync(configPath, yaml.stringify(config));
+export function writeConfig(config: CuseConfig, configPath?: string): void {
+  const cp = configPath || getConfigPath();
+  fs.writeFileSync(cp, yaml.stringify(config));
 }
 
-export function addComputer(computer: ComputerConfig): void {
-  const config = readConfig();
+export function addComputer(
+  computer: ComputerConfig,
+  configPath?: string
+): void {
+  const config = readConfig(configPath);
   const existingIndex = config.computers.findIndex(
     (c) => c.identifier === computer.identifier
   );
@@ -60,28 +63,31 @@ export function addComputer(computer: ComputerConfig): void {
     config.computers.push(computer);
   }
 
-  writeConfig(config);
+  writeConfig(config, configPath);
 }
 
-export function removeComputer(identifier: string): void {
-  const config = readConfig();
+export function removeComputer(identifier: string, configPath?: string): void {
+  const config = readConfig(configPath);
   config.computers = config.computers.filter(
     (c) => c.identifier !== identifier
   );
-  writeConfig(config);
+  writeConfig(config, configPath);
 }
 
-export function getComputer(identifier: string): ComputerConfig | undefined {
-  const config = readConfig();
+export function getComputer(
+  identifier: string,
+  configPath?: string
+): ComputerConfig | undefined {
+  const config = readConfig(configPath);
   return config.computers.find((c) => c.identifier === identifier);
 }
 
-export function getAllComputers(): ComputerConfig[] {
-  const config = readConfig();
+export function getAllComputers(configPath?: string): ComputerConfig[] {
+  const config = readConfig(configPath);
   return config.computers;
 }
 
-export function getProjectName(): string {
-  const config = readConfig();
+export function getProjectName(configPath?: string): string {
+  const config = readConfig(configPath);
   return config.project.name;
 }

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { CalendarDays } from 'lucide-react';
 import { FaDiscord } from 'react-icons/fa';
 
 const Community = () => {
@@ -7,7 +8,7 @@ const Community = () => {
       <div className="w-full">
         <div className="flex items-center justify-center border px-8 py-20 text-center md:p-20">
           <div className="mx-auto max-w-screen-md">
-            <h1 className="mb-4 text-balance text-2xl font-semibold md:text-5xl">
+            <h1 className="mb-4 text-balance text-2xl font-semibold md:text-4xl">
               Join the community
             </h1>
             <p className="text-muted-foreground md:text-lg">
@@ -20,6 +21,12 @@ const Community = () => {
                 <a href={process.env.NEXT_PUBLIC_DISCORD_URL} target="_blank">
                   <FaDiscord />
                   Join Discord
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href={process.env.NEXT_PUBLIC_CALENDAR_URL} target="_blank">
+                  <CalendarDays />
+                  Talk to us
                 </a>
               </Button>
             </div>

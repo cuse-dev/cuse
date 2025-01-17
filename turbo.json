@@ -4,7 +4,15 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": [
+        "NEXT_PUBLIC_GITHUB_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_DISCORD_URL",
+        "NEXT_PUBLIC_CALENDAR_URL",
+        "RESEND_API_KEY",
+        "RESEND_AUDIENCE_ID"
+      ]
     },
     "build:docker": {
       "dependsOn": ["build"],
@@ -20,7 +28,15 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "NEXT_PUBLIC_GITHUB_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_DISCORD_URL",
+        "NEXT_PUBLIC_CALENDAR_URL",
+        "RESEND_API_KEY",
+        "RESEND_AUDIENCE_ID"
+      ]
     },
     "clean": {
       "cache": false

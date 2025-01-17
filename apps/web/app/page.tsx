@@ -5,6 +5,7 @@ import Features from '@/components/features';
 import Footer from '@/components/footer';
 import Roadmap from '@/components/roadmap';
 import Community from '@/components/community';
+import Waitlist from '@/components/waitlist';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Features />
+      <Waitlist />
       <Benefits />
       <Community />
       <Roadmap />

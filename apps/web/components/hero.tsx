@@ -17,10 +17,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const packageManagers = {
-  npx: 'npx @cuse/cli init',
-  pnpm: 'pnpm create @cuse/cli init',
-  yarn: 'yarn create @cuse/cli init',
-  bun: 'bunx @cuse/cli init',
+  npx: 'npx @cusedev/cli init',
+  pnpm: 'pnpm create @cusedev/cli init',
+  yarn: 'yarn create @cusedev/cli init',
+  bun: 'bunx @cusedev/cli init',
 } as const;
 
 type PackageManager = keyof typeof packageManagers;
@@ -54,8 +54,8 @@ const Hero = () => {
             Unlock the power of computer use
           </h1>
           <p className="m mx-auto max-w-3xl text-muted-foreground lg:text-xl">
-            Cuse is the all in one toolkit for implementing computer use for
-            your AI agents. Seamlessly empower AI agents to interact with
+            cuse is the all in one framework for implementing computer use for
+            your applications. Seamlessly empower AI agents to interact with
             computers just like humans do.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
@@ -80,7 +80,7 @@ const Hero = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Button size="lg" variant="outline" asChild>
-              <a href={process.env.NEXT_PUBLIC_GITHUB_URL + '/tree/main/examples/quickstart'} target="_blank">
+              <a href={process.env.NEXT_PUBLIC_GITHUB_EXAMPLE_URL} target="_blank">
                 See the example
                 <ArrowRight />
               </a>

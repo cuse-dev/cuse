@@ -1,5 +1,5 @@
 {
-  "name": "@cuse/web",
+  "name": "@cusedev/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -25,6 +25,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
+    "resend": "^4.1.1",
+    "sonner": "^1.7.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
   },

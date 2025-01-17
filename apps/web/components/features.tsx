@@ -11,7 +11,7 @@ const Features = () => {
             <Code className="size-6" />
             <h4 className="text-xl font-semibold">Command line interface</h4>
             <p className="text-base font-normal text-muted-foreground">
-              Use the Cuse CLI to manage the computers your AI agents use. Stay
+              Use the cuse CLI to manage the computers your AI agents use. Stay
               on top of the machines you use and the tasks you perform.
             </p>
           </div>
@@ -33,8 +33,8 @@ const Features = () => {
             <Text className="size-6" />
             <h4 className="text-xl font-semibold">Open source</h4>
             <p className="text-base font-normal text-muted-foreground">
-              Cuse is open source and easy to use locally for everyone. Check
-              out our repository on GitHub for an example of how to use Cuse.
+              cuse is open source and easy to use locally for everyone. Check
+              out our repository on GitHub for an example of how to use cuse.
             </p>
           </div>
         </div>
@@ -44,7 +44,7 @@ const Features = () => {
           <Box className="size-6" />
           <h4 className="text-xl font-semibold">SDK</h4>
           <p className="text-base font-normal text-muted-foreground">
-            Use the Cuse SDK to implement computer use in your own applications
+            Use the cuse SDK to implement computer use in your own applications
             quickly. Interact with the computer via our JS request client SDK or
             any other language via the REST API.
           </p>

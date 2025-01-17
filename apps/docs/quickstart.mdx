@@ -1,6 +1,6 @@
 ---
 title: 'Quickstart'
-description: 'Get started with Cuse in minutes'
+description: 'Get started with cuse in minutes'
 ---
 
 ## Requirements
@@ -8,7 +8,7 @@ description: 'Get started with Cuse in minutes'
 Before getting started, make sure you have the following installed:
 
 ### Docker
-Docker is required for all Cuse setups. Make sure you have Docker installed and running on your machine.
+Docker is required for all cuse setups. Make sure you have Docker installed and running on your machine.
     
 You can download Docker from the [official Docker website](https://www.docker.com/get-started/).
 
@@ -32,13 +32,13 @@ Learn how to get started with our example repository.
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/cuse-dev/cuse
-cd examples/quickstart
+git clone https://github.com/cuse-dev/cuse-quickstart
+cd cuse-quickstart
 ```
 
 ### 2. Start the computer
 ```bash
-npx @cuse/cli start
+npx @cusedev/cli start
 ```
 
 ### 3. Run the example
@@ -49,21 +49,21 @@ npm run dev
 
 ## Add to Existing Project
 
-Learn how to integrate Cuse into your existing project.
+Learn how to integrate cuse into your existing project.
 
 ### 1. Install and initialize
 ```bash
-npm install @cuse/core
-npx @cuse/cli init
-npx @cuse/cli new
+npm install @cusedev/core
+npx @cusedev/cli init
+npx @cusedev/cli new
 ```
 
 ### 2. Start the computer
 ```bash
-npx @cuse/cli start
+npx @cusedev/cli start
 ```
 
-### 3. Implement Cuse
+### 3. Implement cuse
 Create the computer instance:
 ```typescript
 const computer = new Computer({
@@ -86,7 +86,7 @@ const base64 = await computer.system.display.getScreenshot();
     icon="square-terminal"
     href="/cli/init"
   >
-    Learn how to use the Cuse CLI to manage your computers
+    Learn how to use the cuse CLI to manage your computers
   </Card>
   <Card
     title="API Reference"

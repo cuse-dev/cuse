@@ -9,6 +9,7 @@ interface StartOptions extends BaseOptions {
   identifier?: string;
   detached?: boolean;
   force?: boolean;
+  config?: string;
 }
 
 export const startCommand: CommandModule<StartOptions> = {
@@ -28,12 +29,20 @@ export const startCommand: CommandModule<StartOptions> = {
       .option('force', {
         type: 'boolean',
         description: 'Force a restart if already running',
+      })
+      .option('config', {
+        type: 'string',
+        description: 'Path to a custom config file',
       }) as Argv<StartOptions>;
   },
   async handler(argv: Arguments<StartOptions>) {
-    const { identifier, force } = argv;
+    const { identifier, force, config }: StartOptions = argv;
 
-    if (!configExists()) {
+    if (config) {
+      console.info(`Using custom config file: ${config}`);
+    }
+
+    if (!configExists(config)) {
       console.error('No cuse configuration found in this directory.');
       console.info("Run 'cuse init' to initialize a new configuration.");
       process.exit(1);

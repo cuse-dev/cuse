@@ -1,4 +1,4 @@
-# Cuse
+# cuse
 
 An open-source framework for building AI agents that can interact with computers
 
@@ -15,21 +15,21 @@ An open-source framework for building AI agents that can interact with computers
 Install dependencies:
 
 ```bash
-npm install @cuse/core
+npm install @cusedev/core
 ```
 
 Initialize and create a computer:
 
 ```bash
-npx @cuse/cli init
-npx @cuse/cli new
-npx @cuse/cli start
+npx @cusedev/cli init
+npx @cusedev/cli new
+npx @cusedev/cli start
 ```
 
 Create a `Computer` instance
 
 ```typescript
-import { Computer } from '@cuse/core';
+import { Computer } from '@cusedev/core';
 
 const computer = new Computer();
 ```
@@ -51,7 +51,7 @@ const output = await computer.system.bash.execute({ command: 'ls -la' });
 
 Visit our [documentation](https://docs.cuse.dev) to learn more about:
 - Getting started with the example project
-- Adding Cuse to your existing project
+- Adding cuse to your existing project
 - Core concepts and API reference
 - CLI commands and usage
 

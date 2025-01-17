@@ -7,13 +7,12 @@
     "agents",
     "computer-use"
   ],
-  "version": "0.1.0",
+  "version": "0.1.11",
   "module": "index.ts",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "type": "module",
   "bin": {
-    "cuse": "./dist/index.js"
+    "cuse": "dist/index.js"
   },
   "files": [
     "dist"
@@ -36,6 +35,7 @@
   "dependencies": {
     "execa": "^9.5.2",
     "inquirer": "^12.2.0",
+    "ora": "^8.1.1",
     "shx": "^0.3.4",
     "yaml": "^2.7.0",
     "yargs": "^17.7.2"
@@ -43,6 +43,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cuse-dev/cuse.git"
+    "url": "git+https://github.com/cuse-dev/cuse.git"
   }
 }

@@ -1,0 +1,62 @@
+name: NPM Publish CLI
+
+on:
+  workflow_dispatch: 
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/cli/**'
+
+concurrency:
+  group: npm-publish
+
+jobs:
+  publish:
+    name: Publish CLI to NPM
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: packages/cli
+        run: bun install
+
+      - name: Build
+        working-directory: packages/cli
+        run: bun run build
+
+      - name: Bump patch version
+        working-directory: packages/cli
+        run: bun x npm version patch --no-workspaces-update
+
+      - name: Commit version bump
+        working-directory: packages/core
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Bump patch version"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Publish to NPM
+        working-directory: packages/cli
+        run: bunx npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

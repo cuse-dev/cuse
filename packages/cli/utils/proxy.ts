@@ -33,6 +33,7 @@ export async function setupProxy(): Promise<void> {
   const projectName = getProjectName();
   const templateDir = getTemplatesDir();
   const dockerComposePath = path.join(templateDir, 'docker-compose.yml');
+  const nginxConfPath = path.join(templateDir, 'nginx.conf');
 
   // Ensure docker network exists
   try {
@@ -53,6 +54,7 @@ export async function setupProxy(): Promise<void> {
     ...process.env,
     PROXY_PORT: port.toString(),
     COMPOSE_PROJECT_NAME: projectName,
+    NGINX_CONF_PATH: nginxConfPath,
   };
 
   try {
@@ -81,10 +83,10 @@ export async function setupProxy(): Promise<void> {
     const errorText = [error?.message, error?.stderr].join(' ');
     if (errorText.includes('port is already allocated')) {
       console.error(
-        `Port ${PROXY_PORT} is already in use. This usually means another Cuse project is running.`
+        `Port ${PROXY_PORT} is already in use. This usually means another cuse project is running.`
       );
       console.error(
-        `Please stop other Cuse projects first using 'cuse stop' in their respective directories.`
+        `Please stop other cuse projects first using 'cuse stop' in their respective directories.`
       );
       process.exit(1);
     }
