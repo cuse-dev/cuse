@@ -80,7 +80,7 @@ const Hero = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Button size="lg" variant="outline" asChild>
-              <a href={process.env.NEXT_PUBLIC_GITHUB_URL + '/tree/main/examples/quickstart'} target="_blank">
+              <a href={process.env.NEXT_PUBLIC_GITHUB_EXAMPLE_URL} target="_blank">
                 See the example
                 <ArrowRight />
               </a>
