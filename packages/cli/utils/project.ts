@@ -8,7 +8,7 @@ export interface ComputerConfig {
   template?: string | undefined;
 }
 
-export interface CuseConfig {
+export interface cuseConfig {
   version: string;
   project: {
     name: string;
@@ -17,7 +17,7 @@ export interface CuseConfig {
   computers: ComputerConfig[];
 }
 
-const DEFAULT_CONFIG: CuseConfig = {
+const DEFAULT_CONFIG: cuseConfig = {
   version: '1.0.0',
   project: {
     name: path.basename(process.cwd()),
@@ -33,7 +33,7 @@ export function configExists(): boolean {
   return fs.existsSync(getConfigPath());
 }
 
-export function readConfig(): CuseConfig {
+export function readConfig(): cuseConfig {
   const configPath = getConfigPath();
   if (!configExists()) {
     return DEFAULT_CONFIG;
@@ -43,7 +43,7 @@ export function readConfig(): CuseConfig {
   return yaml.parse(configFile);
 }
 
-export function writeConfig(config: CuseConfig): void {
+export function writeConfig(config: cuseConfig): void {
   const configPath = getConfigPath();
   fs.writeFileSync(configPath, yaml.stringify(config));
 }

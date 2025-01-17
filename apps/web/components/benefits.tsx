@@ -5,7 +5,7 @@ const Benefits = () => {
     <section id="benefits" className="py-32 px-8">
       <div className="w-full">
         <div className="mx-auto flex max-w-screen-md flex-col justify-center gap-7 md:text-center">
-          <p className="text-xs text-muted-foreground">Why Cuse?</p>
+          <p className="text-xs text-muted-foreground">Why cuse?</p>
           <h2 className="text-3xl font-medium lg:text-4xl">
             A better way to implement computer use
           </h2>
@@ -36,7 +36,7 @@ const Benefits = () => {
                 <span className="absolute -left-px hidden h-6 w-px bg-primary md:inline-block"></span>
               </h3>
               <p className="text-sm text-muted-foreground md:text-base">
-                Cuse is open source and available for everyone to use and
+                cuse is open source and available for everyone to use and
                 contribute to.
               </p>
             </div>

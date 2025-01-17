@@ -54,7 +54,7 @@ const Hero = () => {
             Unlock the power of computer use
           </h1>
           <p className="m mx-auto max-w-3xl text-muted-foreground lg:text-xl">
-            Cuse is the all in one framework for implementing computer use for
+            cuse is the all in one framework for implementing computer use for
             your applications. Seamlessly empower AI agents to interact with
             computers just like humans do.
           </p>

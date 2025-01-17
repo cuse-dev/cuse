@@ -12,7 +12,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Cuse - Computer Use Framework',
+  title: 'cuse - Computer Use Framework',
   description: 'A framework for building AI agents that can interact with computers',
 };
 

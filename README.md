@@ -1,4 +1,4 @@
-# Cuse
+# cuse
 
 An open-source framework for building AI agents that can interact with computers
 
@@ -51,7 +51,7 @@ const output = await computer.system.bash.execute({ command: 'ls -la' });
 
 Visit our [documentation](https://docs.cuse.dev) to learn more about:
 - Getting started with the example project
-- Adding Cuse to your existing project
+- Adding cuse to your existing project
 - Core concepts and API reference
 - CLI commands and usage
 

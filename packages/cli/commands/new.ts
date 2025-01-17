@@ -97,15 +97,15 @@ export const newCommand: CommandModule<NewOptions> = {
     const computer = await startComputer(os, identifier);
 
     // Check if endpoints are accessible
-    console.info('\nSetting up Cuse API Service');
+    console.info('\nSetting up cuse API Service');
     const apiWorking = await checkEndpoint(
       computer.api,
       `Starting computer ${computer.identifier}...`
     );
     if (apiWorking) {
-      console.info('\n✓ Cuse API is ready');
+      console.info('\n✓ cuse API is ready');
     } else {
-      console.warn('\n⚠️ Cuse API is not responding');
+      console.warn('\n⚠️ cuse API is not responding');
     }
 
     console.info('\nSetting up noVNC Service');

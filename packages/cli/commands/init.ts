@@ -1,7 +1,7 @@
 import type { Arguments, Argv } from 'yargs';
 import inquirer from 'inquirer';
 import type { BaseOptions, CommandModule } from './types';
-import { configExists, writeConfig, type CuseConfig } from '../utils/project';
+import { configExists, writeConfig, type cuseConfig } from '../utils/project';
 import { setupProxy } from '../utils/proxy';
 import { PROXY_PORT } from '../config';
 
@@ -66,7 +66,7 @@ export const initCommand: CommandModule<InitOptions> = {
       },
     ]);
 
-    const config: CuseConfig = {
+    const config: cuseConfig = {
       version: '1.0.0',
       project: {
         name: projectName,

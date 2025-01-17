@@ -118,7 +118,7 @@ export async function startComputer(
     const errorMessage = error?.message || '';
     if (errorMessage.includes('port is already allocated')) {
       throw new Error(
-        'A Cuse project is already running. Please stop it before starting a new one.'
+        'A cuse project is already running. Please stop it before starting a new one.'
       );
     }
     throw error;

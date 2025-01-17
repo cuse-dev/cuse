@@ -4,7 +4,7 @@ Core library for implementing computer usage capabilities for AI agents. This pa
 
 ### Documentation
 
-- [Cuse CLI](https://docs.cuse.dev/cli)
+- [cuse CLI](https://docs.cuse.dev/cli)
 - [Core Package](https://docs.cuse.dev/core)
 - [Computer API](https://docs.cuse.dev/api-reference)
 - [GitHub Repository](https://github.com/cusedev/cuse)

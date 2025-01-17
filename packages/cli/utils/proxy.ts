@@ -81,10 +81,10 @@ export async function setupProxy(): Promise<void> {
     const errorText = [error?.message, error?.stderr].join(' ');
     if (errorText.includes('port is already allocated')) {
       console.error(
-        `Port ${PROXY_PORT} is already in use. This usually means another Cuse project is running.`
+        `Port ${PROXY_PORT} is already in use. This usually means another cuse project is running.`
       );
       console.error(
-        `Please stop other Cuse projects first using 'cuse stop' in their respective directories.`
+        `Please stop other cuse projects first using 'cuse stop' in their respective directories.`
       );
       process.exit(1);
     }

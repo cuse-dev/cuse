@@ -5,9 +5,10 @@ import {
 
 const sections = [
   {
-    title: 'Cuse',
+    title: 'cuse',
     links: [
       { name: 'Features', href: '#features' },
+      { name: 'Waitlist', href: '#waitlist' },
       { name: 'Benefits', href: '#benefits' },
       { name: 'Community', href: '#community' },
       { name: 'Roadmap', href: '#roadmap' },
@@ -70,9 +71,9 @@ const Footer = () => {
           </div>
           <div className="mt-20 flex flex-col justify-between gap-4 border-t pt-8 text-sm font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-left">
             <p>
-              <span className="mr-2 font-bold text-primary">Cuse</span>© All rights reserved.
+              <span className="mr-2 font-bold text-primary">cuse</span>© All rights reserved.
             </p>
-            <p>Made with ❤️ in Berlin by Cuse</p>
+            <p>Made with ❤️ in Berlin by cuse</p>
           </div>
         </footer>
       </div>
