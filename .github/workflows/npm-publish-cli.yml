@@ -39,6 +39,8 @@ jobs:
       - name: Commit version bump
         working-directory: packages/core
         run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git commit -am "Bump patch version"
           git push
         env:
