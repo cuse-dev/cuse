@@ -42,9 +42,7 @@
   "paths": {
     "/computer/screenshot": {
       "get": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Take a Screenshot",
         "description": "Captures and returns a screenshot from the specified display as a PNG file.",
         "operationId": "computerTakeScreenshot",
@@ -74,9 +72,7 @@
     },
     "/computer/key": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Press key",
         "description": "Presses a key on the specified display.",
         "operationId": "computerPressKey",
@@ -97,9 +93,7 @@
                     "description": "Display number on which to press the key."
                   }
                 },
-                "required": [
-                  "key"
-                ]
+                "required": ["key"]
               }
             }
           }
@@ -123,9 +117,7 @@
     },
     "/computer/type": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Type text",
         "description": "Types text on the specified display.",
         "operationId": "computerTypeText",
@@ -156,9 +148,7 @@
                     "description": "Number of characters typed between delays."
                   }
                 },
-                "required": [
-                  "text"
-                ]
+                "required": ["text"]
               }
             }
           }
@@ -182,9 +172,7 @@
     },
     "/computer/mouse-move": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Move mouse cursor",
         "description": "Moves the mouse cursor to the specified coordinates on the given display.",
         "operationId": "computerMoveCursor",
@@ -209,10 +197,7 @@
                     "description": "Display number on which to move the mouse."
                   }
                 },
-                "required": [
-                  "x",
-                  "y"
-                ]
+                "required": ["x", "y"]
               }
             }
           }
@@ -236,9 +221,7 @@
     },
     "/computer/left-click": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Perform left mouse click",
         "description": "Performs a left mouse click on the specified display.",
         "operationId": "computerLeftClick",
@@ -278,9 +261,7 @@
     },
     "/computer/right-click": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Perform right mouse click",
         "description": "Performs a right mouse click on the specified display.",
         "operationId": "computerRightClick",
@@ -320,9 +301,7 @@
     },
     "/computer/middle-click": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Perform middle mouse click",
         "description": "Performs a middle mouse click on the specified display.",
         "operationId": "computerMiddleClick",
@@ -362,9 +341,7 @@
     },
     "/computer/double-click": {
       "post": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Perform double click",
         "description": "Performs a double click with the left mouse button on the specified display.",
         "operationId": "computerDoubleClick",
@@ -390,23 +367,56 @@
             "description": "Double click performed successfully."
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/computer/left-click-drag": {
+      "post": {
+        "tags": ["Computer"],
+        "summary": "Perform left click and drag",
+        "description": "Performs a left click and drag operation to the specified coordinates on the given display.",
+        "operationId": "computerLeftClickDrag",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "description": "Target X coordinate to drag to."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "description": "Target Y coordinate to drag to."
+                  },
+                  "display_num": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "Display number on which to perform the drag operation."
+                  }
+                },
+                "required": ["x", "y"]
               }
             }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Drag operation performed successfully."
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/computer/cursor-position": {
       "get": {
-        "tags": [
-          "Computer"
-        ],
+        "tags": ["Computer"],
         "summary": "Get cursor position",
         "description": "Gets the current position of the mouse cursor on the specified display.",
         "operationId": "computerGetCursorPosition",
@@ -456,9 +466,7 @@
     },
     "/editor/view": {
       "post": {
-        "tags": [
-          "Editor"
-        ],
+        "tags": ["Editor"],
         "summary": "View a file",
         "description": "View the contents of a file, optionally specifying a line range.",
         "operationId": "editorViewFile",
@@ -467,25 +475,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "path": {
-                    "type": "string",
-                    "description": "Path to the file to be viewed."
-                  },
-                  "view_range": {
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    },
-                    "minItems": 2,
-                    "maxItems": 2,
-                    "description": "Start and end lines (inclusive)."
-                  }
-                },
-                "required": [
-                  "path"
-                ]
+                "$ref": "#/components/schemas/ViewParams"
               }
             }
           }
@@ -502,26 +492,17 @@
             }
           },
           "404": {
-            "description": "File not found"
+            "$ref": "#/components/responses/FileNotFound"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
-              }
-            }
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/editor/create": {
       "post": {
-        "tags": [
-          "Editor"
-        ],
+        "tags": ["Editor"],
         "summary": "Create a file",
         "description": "Create a new file with optional content.",
         "operationId": "editorCreateFile",
@@ -530,20 +511,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "path": {
-                    "type": "string",
-                    "description": "Path to the file to be created."
-                  },
-                  "file_text": {
-                    "type": "string",
-                    "description": "Optional content to place in the file."
-                  }
-                },
-                "required": [
-                  "path"
-                ]
+                "$ref": "#/components/schemas/CreateParams"
               }
             }
           }
@@ -556,23 +524,14 @@
             "description": "File already exists"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
-              }
-            }
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/editor/str-replace": {
       "post": {
-        "tags": [
-          "Editor"
-        ],
+        "tags": ["Editor"],
         "summary": "Replace string in a file",
         "description": "Replace occurrences of a string in a file with another string.",
         "operationId": "editorReplaceString",
@@ -581,26 +540,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "path": {
-                    "type": "string",
-                    "description": "Path to the file."
-                  },
-                  "old_str": {
-                    "type": "string",
-                    "description": "String to replace."
-                  },
-                  "new_str": {
-                    "type": "string",
-                    "description": "Replacement string."
-                  }
-                },
-                "required": [
-                  "path",
-                  "old_str",
-                  "new_str"
-                ]
+                "$ref": "#/components/schemas/StrReplaceParams"
               }
             }
           }
@@ -610,26 +550,17 @@
             "description": "String replaced"
           },
           "404": {
-            "description": "File not found"
+            "$ref": "#/components/responses/FileNotFound"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
-              }
-            }
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/editor/insert": {
       "post": {
-        "tags": [
-          "Editor"
-        ],
+        "tags": ["Editor"],
         "summary": "Insert text into a file",
         "description": "Insert text into a specific line of a file.",
         "operationId": "editorInsertText",
@@ -638,25 +569,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "path": {
-                    "type": "string",
-                    "description": "Path to the file."
-                  },
-                  "text": {
-                    "type": "string",
-                    "description": "The text to insert."
-                  },
-                  "insert_line": {
-                    "type": "integer",
-                    "description": "Line number at which to insert text."
-                  }
-                },
-                "required": [
-                  "path",
-                  "text"
-                ]
+                "$ref": "#/components/schemas/InsertParams"
               }
             }
           }
@@ -666,112 +579,205 @@
             "description": "Text inserted"
           },
           "404": {
-            "description": "File not found"
+            "$ref": "#/components/responses/FileNotFound"
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
-              }
-            }
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/editor/undo-edit": {
       "post": {
-        "tags": [
-          "Editor"
-        ],
+        "tags": ["Editor"],
         "summary": "Undo the last edit",
         "description": "Currently not implemented.",
         "operationId": "editorUndoLastEdit",
-        "responses": {
-          "500": {
-            "description": "Not implemented",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UndoEditParams"
               }
             }
+          }
+        },
+        "responses": {
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/bash/command": {
       "post": {
-        "tags": [
-          "Bash"
-        ],
+        "tags": ["Bash"],
         "summary": "Execute Bash Command",
-        "description": "Executes a given bash command and returns the output.",
+        "description": "Executes a given bash command and returns the output. If the command runs longer than 15 seconds, it will be moved to background and return a process ID.",
         "operationId": "bashExecuteCommand",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "command": {
-                    "type": "string",
-                    "description": "Bash command to execute."
-                  }
-                },
-                "required": [
-                  "command"
-                ]
+                "$ref": "#/components/schemas/CommandParams"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Command executed successfully.",
+            "description": "Command executed successfully or moved to background.",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/CommandResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/bash/process/{pid}/output": {
+      "get": {
+        "tags": ["Bash"],
+        "summary": "Get Process Output",
+        "description": "Gets the output of a background process by its PID.",
+        "operationId": "bashGetProcessOutput",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "Process ID",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Process output retrieved successfully.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
+                  "$ref": "#/components/schemas/CommandResponse"
                 }
               }
             }
+          },
+          "404": {
+            "description": "Process not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/bash/process/{pid}": {
+      "delete": {
+        "tags": ["Bash"],
+        "summary": "Terminate Process",
+        "description": "Terminates a background process by its PID.",
+        "operationId": "bashTerminateProcess",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "description": "Process ID",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Process terminated successfully"
+          },
+          "404": {
+            "description": "Process not found"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/bash/processes/managed": {
+      "get": {
+        "tags": ["Bash"],
+        "summary": "List Managed Processes",
+        "description": "Lists all background processes managed by the API.",
+        "operationId": "bashListManagedProcesses",
+        "responses": {
+          "200": {
+            "description": "List of managed processes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/bash/processes/system": {
+      "get": {
+        "tags": ["Bash"],
+        "summary": "List System Processes",
+        "description": "Lists all running processes on the system.",
+        "operationId": "bashListSystemProcesses",
+        "responses": {
+          "200": {
+            "description": "List of system processes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/bash/restart": {
       "post": {
-        "tags": [
-          "Bash"
-        ],
+        "tags": ["Bash"],
         "summary": "Restart System",
-        "description": "Restarts the system. Currently, this endpoint is not implemented.",
+        "description": "Restarts the system.",
         "operationId": "bashRestartSystem",
-        "responses": {
-          "500": {
-            "description": "Not implemented",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPError"
-                }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestartParams"
               }
             }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "System restart initiated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
@@ -786,6 +792,169 @@
             "type": "string"
           }
         }
+      },
+      "ViewParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to the file to be viewed."
+          },
+          "view_range": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Start and end lines (inclusive).",
+            "nullable": true
+          }
+        },
+        "required": ["path"]
+      },
+      "CreateParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to the file to be created."
+          },
+          "file_text": {
+            "type": "string",
+            "description": "Optional content to place in the file.",
+            "nullable": true
+          }
+        },
+        "required": ["path"]
+      },
+      "StrReplaceParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to the file."
+          },
+          "old_str": {
+            "type": "string",
+            "description": "String to replace."
+          },
+          "new_str": {
+            "type": "string",
+            "description": "Replacement string."
+          }
+        },
+        "required": ["path", "old_str", "new_str"]
+      },
+      "InsertParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to the file."
+          },
+          "text": {
+            "type": "string",
+            "description": "The text to insert."
+          },
+          "insert_line": {
+            "type": "integer",
+            "description": "Line number at which to insert text.",
+            "nullable": true
+          }
+        },
+        "required": ["path", "text"]
+      },
+      "UndoEditParams": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to the file."
+          }
+        },
+        "required": ["path"]
+      },
+      "CommandParams": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Bash command to execute."
+          }
+        },
+        "required": ["command"]
+      },
+      "CommandResponse": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "type": "string",
+            "description": "Command output if completed.",
+            "nullable": true
+          },
+          "process_id": {
+            "type": "integer",
+            "description": "Process ID if running in background.",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the command execution.",
+            "enum": ["completed", "background"]
+          }
+        },
+        "required": ["status"]
+      },
+      "ProcessInfo": {
+        "type": "object",
+        "properties": {
+          "pid": {
+            "type": "integer",
+            "description": "Process ID"
+          },
+          "command": {
+            "type": "string",
+            "description": "Command that started the process"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the process"
+          },
+          "cpu_percent": {
+            "type": "number",
+            "description": "CPU usage percentage",
+            "nullable": true
+          },
+          "memory_percent": {
+            "type": "number",
+            "description": "Memory usage percentage",
+            "nullable": true
+          },
+          "create_time": {
+            "type": "number",
+            "description": "Process creation time (Unix timestamp)",
+            "nullable": true
+          }
+        },
+        "required": ["pid", "command", "status"]
+      },
+      "ProcessListResponse": {
+        "type": "object",
+        "properties": {
+          "processes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessInfo"
+            },
+            "description": "List of processes"
+          }
+        },
+        "required": ["processes"]
+      },
+      "RestartParams": {
+        "type": "object",
+        "description": "No parameters needed for restart"
       }
     },
     "responses": {
@@ -821,10 +990,7 @@
         "description": "Example of how to view a file with a line range specified.",
         "value": {
           "path": "/path/to/file.txt",
-          "view_range": [
-            1,
-            10
-          ]
+          "view_range": [1, 10]
         }
       },
       "ExampleKeyPressRequest": {

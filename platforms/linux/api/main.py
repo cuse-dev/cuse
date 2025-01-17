@@ -3,9 +3,20 @@ from fastapi.responses import RedirectResponse
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 import re
+import logging
 from routers import computer, bash, editor
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    response = await call_next(request)
+    logger.info(f"{request.method} {request.url.path} - Status: {response.status_code}")
+    return response
 
 # Add CORS middleware
 app.add_middleware(

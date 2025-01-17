@@ -1,5 +1,11 @@
-import * as client from './generated';
-import { MouseInterface, Position, SystemConfig, MoveParams } from './types';
+import * as client from './client';
+import {
+  MouseInterface,
+  Position,
+  SystemConfig,
+  MoveParams,
+  DragParams,
+} from './types';
 import { handleResponse } from './utils';
 
 /**
@@ -28,10 +34,10 @@ export class Mouse implements MouseInterface {
    * @param params Movement parameters containing target coordinates
    * @throws Error if cursor movement fails
    */
-  async move(params: MoveParams): Promise<void> {
+  async move({ x, y }: MoveParams): Promise<void> {
     await handleResponse(
       client.computerMoveCursor({
-        body: { x: params.x, y: params.y, display_num: this.config.displayNum },
+        body: { x, y, display_num: this.config.displayNum },
       })
     );
   }
@@ -80,6 +86,19 @@ export class Mouse implements MouseInterface {
     await handleResponse(
       client.computerDoubleClick({
         body: { display_num: this.config.displayNum },
+      })
+    );
+  }
+
+  /**
+   * Perform a left mouse button click and drag to a specified position
+   * @param params Drag parameters containing target coordinates
+   * @throws Error if click drag operation fails
+   */
+  async leftClickDrag({ x, y }: DragParams): Promise<void> {
+    await handleResponse(
+      client.computerLeftClickDrag({
+        body: { x, y, display_num: this.config.displayNum },
       })
     );
   }
