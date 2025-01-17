@@ -1,6 +1,8 @@
 import { execa } from 'execa';
 import { imagesByOS, PROXY_PORT } from '../../config.js';
 import { getProjectName } from '../project.js';
+import ora from 'ora';
+import type { Ora } from 'ora';
 
 export interface ComputerInfo {
   identifier: string;
@@ -79,6 +81,31 @@ async function getContainerInfo(
   }
 }
 
+async function checkComputerAvailability(
+  identifier: string,
+  spinner: Ora,
+  maxRetries = 60,
+  retryDelay = 1000
+): Promise<boolean> {
+  const url = `http://localhost:${PROXY_PORT}/${identifier}/docs`;
+  let dots = '';
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const { stdout } = await execa('curl', ['-s', '-I', url]);
+      if (stdout.includes('HTTP/1.1 200') || stdout.includes('HTTP/1.1 308')) {
+        return true;
+      }
+    } catch (error) {
+      // Ignore errors and continue retrying
+    }
+    dots = dots + '.';
+    spinner.text = `Waiting for computer to be ready${dots}`;
+    await new Promise((resolve) => setTimeout(resolve, retryDelay));
+  }
+  return false;
+}
+
 export async function startComputer(
   os: string = 'linux',
   identifier: string
@@ -90,14 +117,17 @@ export async function startComputer(
 
   const exists = await containerExists(identifier);
   const projectName = getProjectName();
+  const spinner = ora('Starting computer...').start();
 
   try {
     if (exists) {
       const running = await containerIsRunning(identifier);
       if (!running) {
+        spinner.text = 'Container exists, starting it...';
         await execa('docker', ['start', identifier]);
       }
     } else {
+      spinner.text = 'Creating new container...';
       await execa('docker', [
         'run',
         '-d',
@@ -114,7 +144,23 @@ export async function startComputer(
         image,
       ]);
     }
+
+    const isAvailable = await checkComputerAvailability(identifier, spinner);
+    if (!isAvailable) {
+      spinner.fail('Computer failed to start properly');
+      throw new Error('Computer failed to become available');
+    }
+
+    const info = await getContainerInfo(identifier);
+    if (!info) {
+      spinner.fail('Failed to get container info');
+      throw new Error(`Failed to get container info for "${identifier}"`);
+    }
+
+    spinner.succeed('Computer started successfully');
+    return info;
   } catch (error: any) {
+    spinner.fail('Failed to start computer');
     const errorMessage = error?.message || '';
     if (errorMessage.includes('port is already allocated')) {
       throw new Error(
@@ -123,12 +169,6 @@ export async function startComputer(
     }
     throw error;
   }
-
-  const info = await getContainerInfo(identifier);
-  if (!info) {
-    throw new Error(`Failed to get container info for "${identifier}"`);
-  }
-  return info;
 }
 
 export const startComputerWithIdentifier = async (

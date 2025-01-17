@@ -1,4 +1,4 @@
-import * as client from './generated';
+import * as client from './client';
 import { SystemConfig, SystemInterface } from './types';
 import { Mouse } from './mouse';
 import { Keyboard } from './keyboard';

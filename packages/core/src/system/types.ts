@@ -35,6 +35,16 @@ export interface MoveParams {
 }
 
 /**
+ * Parameters for mouse drag operation
+ */
+export interface DragParams {
+  /** Target X coordinate to drag to */
+  x: number;
+  /** Target Y coordinate to drag to */
+  y: number;
+}
+
+/**
  * Mouse control interface for controlling cursor movement and clicks
  */
 export interface MouseInterface {
@@ -50,6 +60,8 @@ export interface MouseInterface {
   middleClick(): Promise<void>;
   /** Perform a double click at current cursor position */
   doubleClick(): Promise<void>;
+  /** Perform a left click and drag to target coordinates */
+  leftClickDrag(params: DragParams): Promise<void>;
 }
 
 /**
@@ -193,9 +205,31 @@ export interface ExecuteCommandParams {
  */
 export interface BashInterface {
   /** Execute a shell command and get its output */
-  execute(params: ExecuteCommandParams): Promise<string>;
+  execute(params: ExecuteCommandParams): Promise<CommandResponse>;
   /** Restart the system */
   restart(): Promise<void>;
+  /** Get output from a background process */
+  getProcessOutput(params: GetProcessOutputParams): Promise<CommandResponse>;
+  /** Terminate a background process */
+  terminateProcess(params: TerminateProcessParams): Promise<void>;
+  /** List managed processes */
+  listManagedProcesses(): Promise<ProcessInfo[]>;
+}
+
+/**
+ * Parameters for getting process output
+ */
+export interface GetProcessOutputParams {
+  /** Process ID */
+  pid: number;
+}
+
+/**
+ * Parameters for terminating a background process
+ */
+export interface TerminateProcessParams {
+  /** Process ID */
+  pid: number;
 }
 
 /**
@@ -248,6 +282,14 @@ export interface InsertTextParams {
 }
 
 /**
+ * Parameters for undoing the last edit
+ */
+export interface UndoEditParams {
+  /** Path to the file to undo */
+  path: string;
+}
+
+/**
  * Editor interface for file manipulation
  */
 export interface EditorInterface {
@@ -260,7 +302,7 @@ export interface EditorInterface {
   /** Insert text at a specific line in a file */
   insertText(params: InsertTextParams): Promise<void>;
   /** Undo the last edit operation */
-  undoLastEdit(): Promise<void>;
+  undoLastEdit(params: UndoEditParams): Promise<void>;
 }
 
 /**
@@ -277,4 +319,19 @@ export interface SystemInterface {
   bash: Bash;
   /** Editor control for file manipulation */
   editor: Editor;
+}
+
+export interface CommandResponse {
+  output?: string | null;
+  process_id?: number | null;
+  status: 'completed' | 'background';
+}
+
+export interface ProcessInfo {
+  pid: number;
+  command: string;
+  status: string;
+  cpu_percent?: number | null;
+  memory_percent?: number | null;
+  create_time?: number | null;
 }

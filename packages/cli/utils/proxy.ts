@@ -33,6 +33,7 @@ export async function setupProxy(): Promise<void> {
   const projectName = getProjectName();
   const templateDir = getTemplatesDir();
   const dockerComposePath = path.join(templateDir, 'docker-compose.yml');
+  const nginxConfPath = path.join(templateDir, 'nginx.conf');
 
   // Ensure docker network exists
   try {
@@ -53,6 +54,7 @@ export async function setupProxy(): Promise<void> {
     ...process.env,
     PROXY_PORT: port.toString(),
     COMPOSE_PROJECT_NAME: projectName,
+    NGINX_CONF_PATH: nginxConfPath,
   };
 
   try {

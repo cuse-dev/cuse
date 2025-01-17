@@ -1,4 +1,4 @@
-import * as client from './generated';
+import * as client from './client';
 import {
   KeyboardInterface,
   SystemConfig,
@@ -19,10 +19,10 @@ export class Keyboard implements KeyboardInterface {
    * @param params Parameters containing the key to press
    * @throws Error if key press operation fails
    */
-  async pressKey(params: PressKeyParams): Promise<void> {
+  async pressKey({ key }: PressKeyParams): Promise<void> {
     await handleResponse(
       client.computerPressKey({
-        body: { key: params.key, display_num: this.config.displayNum },
+        body: { key: key, display_num: this.config.displayNum },
       })
     );
   }
@@ -32,10 +32,10 @@ export class Keyboard implements KeyboardInterface {
    * @param params Parameters containing the text to type
    * @throws Error if typing operation fails
    */
-  async type(params: TypeParams): Promise<void> {
+  async type({ text }: TypeParams): Promise<void> {
     await handleResponse(
       client.computerTypeText({
-        body: { text: params.text, display_num: this.config.displayNum },
+        body: { text, display_num: this.config.displayNum },
       })
     );
   }

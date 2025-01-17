@@ -19,6 +19,10 @@ RUN apt-get update && \
     sudo \
     mutter \
     x11vnc \
+    python3-tk \
+    python3-dev \
+    python3-xlib \
+    gnome-screenshot \
     # Python/pyenv reqs
     build-essential \
     libssl-dev  \

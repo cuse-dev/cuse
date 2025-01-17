@@ -4,7 +4,7 @@ services:
     ports:
       - '${PROXY_PORT}:80'
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${NGINX_CONF_PATH}:/etc/nginx/nginx.conf:ro
     networks:
       - network
     container_name: ${COMPOSE_PROJECT_NAME}-proxy
