@@ -26,10 +26,10 @@ const Navbar = () => {
         <nav className="flex items-center">
           <div className="flex-1 flex items-center gap-4">
             <img src="/logo.svg" alt="logo" className="w-8 dark:invert" />
-            <span className="text-3xl font-semibold">Cuse</span>
+            <span className="text-3xl font-semibold">cuse</span>
           </div>
           <div className="flex-1 flex justify-center">
-            <NavigationMenu className="hidden md:block">
+            <NavigationMenu className="hidden lg:block">
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuLink
@@ -37,6 +37,14 @@ const Navbar = () => {
                     className={navigationMenuTriggerStyle()}
                   >
                     Features
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="#waitlist"
+                    className={navigationMenuTriggerStyle()}
+                  >
+                    Waitlist
                   </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
@@ -66,7 +74,7 @@ const Navbar = () => {
               </NavigationMenuList>
             </NavigationMenu>
           </div>
-          <div className="flex-1 hidden items-center gap-4 md:flex justify-end">
+          <div className="flex-1 hidden items-center gap-4 lg:flex justify-end">
             <ThemeToggle />
             <Button variant="outline" asChild>
               <a href={process.env.NEXT_PUBLIC_DOCS_URL} target="_blank">
@@ -82,9 +90,9 @@ const Navbar = () => {
             </Button>
           </div>
           <Sheet>
-            <div className="flex items-center gap-4 md:hidden">
+            <div className="flex items-center gap-4 lg:hidden">
               <ThemeToggle />
-              <SheetTrigger asChild className="md:hidden">
+              <SheetTrigger asChild className="lg:hidden">
                 <Button variant="outline" size="icon">
                   <MenuIcon className="h-4 w-4" />
                 </Button>
@@ -95,11 +103,11 @@ const Navbar = () => {
                 <SheetTitle>
                   <div className="flex items-center gap-4">
                     <img
-                      src="https://shadcnblocks.com/images/block/block-1.svg"
+                      src="logo.svg"
                       alt="logo"
                       className="w-8 dark:invert"
                     />
-                    <span className="text-lg font-bold">Shadcn Blocks</span>
+                    <span className="text-lg font-bold">cuse</span>
                   </div>
                 </SheetTitle>
               </SheetHeader>
@@ -108,8 +116,14 @@ const Navbar = () => {
                   <a href="#features" className="font-medium">
                     Features
                   </a>
+                  <a href="#waitlist" className="font-medium">
+                    Waitlist
+                  </a>
                   <a href="#benefits" className="font-medium">
                     Benefits
+                  </a>
+                  <a href="#community" className="font-medium">
+                    Community
                   </a>
                   <a href="#roadmap" className="font-medium">
                     Roadmap

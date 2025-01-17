@@ -3,7 +3,7 @@ const Roadmap = () => {
     <section id="roadmap" className="py-32 px-8">
       <div className="w-full">
         <div className="mx-auto flex max-w-screen-md flex-col justify-center gap-7 md:text-center">
-          <h2 className="text-2xl md:text-4xl">Roadmap</h2>
+          <h2 className="text-2xl md:text-4xl font-semibold">Roadmap</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             We want to become the go-to tool for implementing computer use in
             your applications. This is the list of what to be excited about in

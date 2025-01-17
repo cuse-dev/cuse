@@ -8,7 +8,7 @@ const Community = () => {
       <div className="w-full">
         <div className="flex items-center justify-center border px-8 py-20 text-center md:p-20">
           <div className="mx-auto max-w-screen-md">
-            <h1 className="mb-4 text-balance text-2xl font-semibold md:text-5xl">
+            <h1 className="mb-4 text-balance text-2xl font-semibold md:text-4xl">
               Join the community
             </h1>
             <p className="text-muted-foreground md:text-lg">
