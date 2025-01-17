@@ -1,4 +1,4 @@
-name: NPM Publish
+name: NPM Publish CLI
 
 on:
   push:
@@ -35,6 +35,14 @@ jobs:
       - name: Bump patch version
         working-directory: packages/cli
         run: bun x npm version patch --no-workspaces-update
+
+      - name: Commit version bump
+        working-directory: packages/core
+        run: |
+          git commit -am "Bump patch version"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:

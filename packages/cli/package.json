@@ -12,7 +12,7 @@
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "cuse": "./dist/index.js"
+    "cuse": "dist/index.js"
   },
   "files": [
     "dist"
@@ -42,6 +42,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cuse-dev/cuse.git"
+    "url": "git+https://github.com/cuse-dev/cuse.git"
   }
 }
