@@ -88,11 +88,15 @@ async function checkComputerAvailability(
   retryDelay = 2000
 ): Promise<boolean> {
   const url = `http://localhost:${PROXY_PORT}/${identifier}/docs`;
+  console.log('url');
+  console.log(url);
+
   let dots = '';
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const { stdout } = await execa('curl', ['-s', '-I', url]);
+      const { stdout } = await execa('curl', ['-s', '-i', url]);
+
       if (stdout.includes('HTTP/1.1 200') || stdout.includes('HTTP/1.1 308')) {
         return true;
       }

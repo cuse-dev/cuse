@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import type { Arguments, CommandModule } from './types';
 import { cleanAllComputers } from '../utils/docker';
 import { configExists, getAllComputers } from '../utils/project';
-import { stopProxy } from '../utils/proxy';
+import { stopProxy, cleanupProxy } from '../utils/proxy';
 import type { BaseOptions } from './types';
 import type { Argv } from 'yargs';
 
@@ -61,8 +61,9 @@ export const destroyCommand: CommandModule<DestroyOptions> = {
     console.info('Removing all computers...');
     await cleanAllComputers();
 
-    // Stop the proxy
+    // Stop and cleanup proxy resources
     await stopProxy();
+    await cleanupProxy();
 
     console.info('All computers removed.');
   },

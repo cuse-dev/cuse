@@ -44,7 +44,9 @@
     "@ai-sdk/anthropic": "^1.0.5",
     "@hey-api/client-fetch": "^0.6.0",
     "@hey-api/openapi-ts": "^0.61.3",
-    "ai": "^4.1.0"
+    "@types/sharp": "^0.32.0",
+    "ai": "^4.1.0",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/bun": "latest",

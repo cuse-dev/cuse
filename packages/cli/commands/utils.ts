@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import { haiku } from '../utils/haiku';
 
-export const supportedOS = ['linux'];
+export const supportedOS = ['linux', 'browser'];
 
 export async function chooseOS(osArg?: string): Promise<string> {
   if (osArg && supportedOS.includes(osArg)) return osArg;

@@ -117,3 +117,25 @@ export async function stopProxy(): Promise<void> {
     console.warn('Failed to stop proxy server. It might already be stopped.');
   }
 }
+
+export async function cleanupProxy(): Promise<void> {
+  const projectName = getProjectName();
+
+  // Remove proxy container
+  try {
+    await execa('docker', ['rm', '-f', `cuse-${projectName}-proxy`]);
+  } catch (error) {
+    console.warn(
+      'Failed to remove proxy container. It might already be removed.'
+    );
+  }
+
+  // Remove network
+  try {
+    await execa('docker', ['network', 'rm', `cuse-${projectName}-network`]);
+  } catch (error) {
+    console.warn(
+      'Failed to remove Docker network. It might already be removed.'
+    );
+  }
+}

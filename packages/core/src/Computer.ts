@@ -31,7 +31,7 @@ export class Computer<T extends Record<string, App> = {}> {
       display: config.display ?? defaultDisplay,
     };
 
-    this.system = initSystem({
+    this.system = initSystem(this, {
       displayNum: this.config.display.number,
       baseUrl: this.config.baseUrl,
     });
