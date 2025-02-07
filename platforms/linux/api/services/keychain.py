@@ -64,12 +64,16 @@ class KeychainService:
         output = self._run_pass_command(['ls'])
         
         # Parse the output to get service names
-        services = [
-            line.replace('└── ', '').strip()
-            for line in output.split('\n')
-            if '└──' in line
-        ]
-        return [s for s in services if s]
+        services = []
+        for line in output.split('\n'):
+            line = line.strip()
+            if '--' in line:
+                # Remove everything up to and including '--' and trim whitespace
+                service = line.split('--', 1)[1].strip()
+                if service:  # Only add non-empty services
+                    services.append(service)
+                    
+        return services
 
     async def authenticate(self, service: str, auth_elements: List[AuthElement]) -> bool:
         """Verify credentials exist for a service."""
