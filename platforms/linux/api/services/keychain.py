@@ -63,14 +63,14 @@ class KeychainService:
         """List all services in the password store."""
         output = self._run_pass_command(['ls'])
         
-        # Parse the output to get service names
+        # Parse the output to get service names, handling both ├── and └── prefixes
         services = []
         for line in output.split('\n'):
             line = line.strip()
-            if '--' in line:
-                # Remove everything up to and including '--' and trim whitespace
-                service = line.split('--', 1)[1].strip()
-                if service:  # Only add non-empty services
+            if '└──' in line or '├──' in line:
+                # Remove the tree symbols and any leading/trailing whitespace
+                service = line.replace('└── ', '').replace('├── ', '').strip()
+                if service:  # Only add non-empty service names
                     services.append(service)
                     
         return services
