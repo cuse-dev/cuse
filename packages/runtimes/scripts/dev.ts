@@ -1,6 +1,5 @@
-import { spawn } from 'child_process';
-// @ts-nocheck
-import * as core from './index';
+import { spawn } from 'node:child_process';
+import * as runtimes from '../index';
 
 async function runCommand(command: string) {
   return new Promise((resolve, reject) => {
@@ -18,6 +17,10 @@ async function runCommand(command: string) {
 }
 
 async function main() {
+  if (!runtimes) {
+    throw new Error('runtimes is not defined');
+  }
+
   try {
     await runCommand('bun run build');
     await runCommand('bun run check-types');

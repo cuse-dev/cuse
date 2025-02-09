@@ -15,23 +15,24 @@ When creating a new Computer instance, you can configure its properties:
 const computer = new Computer({
   config: {
     baseUrl: 'http://localhost:4242/your-computer-name',
-    display: {  // optional
+    display: {
+      // optional
       number: 1,
       width: 1024,
-      height: 768
-    }
-  }
+      height: 768,
+    },
+  },
 });
 ```
 
 ### Configuration Options
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `baseUrl` | string | required | The base URL for the computer's API endpoint |
-| `display.number` | number | 1 | Display number to control |
-| `display.width` | number | 1024 | Display width in pixels |
-| `display.height` | number | 768 | Display height in pixels |
+| Property         | Type   | Default  | Description                                  |
+| ---------------- | ------ | -------- | -------------------------------------------- |
+| `baseUrl`        | string | required | The base URL for the computer's API endpoint |
+| `display.number` | number | 1        | Display number to control                    |
+| `display.width`  | number | 1024     | Display width in pixels                      |
+| `display.height` | number | 768      | Display height in pixels                     |
 
 ## System Interface
 
@@ -82,8 +83,8 @@ Execute shell commands:
 
 ```typescript
 // Execute a command
-const output = await computer.system.bash.execute({ 
-  command: 'ls -la' 
+const output = await computer.system.bash.execute({
+  command: 'ls -la',
 });
 
 // Restart the system
@@ -98,27 +99,27 @@ Manipulate files on the computer:
 // View file contents
 const content = await computer.system.editor.viewFile({
   path: '/path/to/file',
-  viewRange: [1, 10] // optional: view specific lines
+  viewRange: [1, 10], // optional: view specific lines
 });
 
 // Create a new file
 await computer.system.editor.createFile({
   path: '/path/to/new/file',
-  content: 'Hello, World!' // optional
+  content: 'Hello, World!', // optional
 });
 
 // Replace text in a file
 await computer.system.editor.replaceString({
   path: '/path/to/file',
   oldStr: 'old',
-  newStr: 'new'
+  newStr: 'new',
 });
 
 // Insert text at a specific line
 await computer.system.editor.insertText({
   path: '/path/to/file',
   line: 5,
-  text: 'New line content'
+  text: 'New line content',
 });
 
 // Undo last edit
@@ -133,7 +134,7 @@ The Computer class includes a `Keychain` app that allows you to manage your pass
 // Store credentials in keychain
 await computer.keychain.setKey('my-service', {
   username: 'user123',
-  password: 'securepass'
+  password: 'securepass',
 });
 
 // Load credentials from keychain

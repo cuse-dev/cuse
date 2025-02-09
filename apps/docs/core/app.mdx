@@ -19,28 +19,28 @@ class CustomApp extends App {
     super({
       name: 'custom-app',
       platform: 'linux',
-      autoStart: true
+      autoStart: true,
     });
   }
 
   async install(): Promise<void> {
     // Install dependencies or set up the app
     await this.computer.system.bash.execute({
-      command: 'apt-get install -y your-dependency'
+      command: 'apt-get install -y your-dependency',
     });
   }
 
   async start(): Promise<void> {
     // Start your application
     await this.computer.system.bash.execute({
-      command: 'start-your-app'
+      command: 'start-your-app',
     });
   }
 
   async stop(): Promise<void> {
     // Clean up and stop your application
     await this.computer.system.bash.execute({
-      command: 'stop-your-app'
+      command: 'stop-your-app',
     });
   }
 }
@@ -50,10 +50,10 @@ class CustomApp extends App {
 
 When creating an app, you must provide an `AppConfig`:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `name` | string | Unique name for your app |
-| `platform` | string | Target platform (e.g., 'linux', 'windows') |
+| Property    | Type    | Description                                                    |
+| ----------- | ------- | -------------------------------------------------------------- |
+| `name`      | string  | Unique name for your app                                       |
+| `platform`  | string  | Target platform (e.g., 'linux', 'windows')                     |
 | `autoStart` | boolean | Whether to start the app automatically when the computer boots |
 
 ### Lifecycle Methods
@@ -77,11 +77,11 @@ interface MyApps {
 const computer = new Computer<MyApps>({
   apps: {
     custom: new CustomApp(),
-    other: new OtherApp()
+    other: new OtherApp(),
   },
   config: {
-    baseUrl: 'http://localhost:4242/my-computer'
-  }
+    baseUrl: 'http://localhost:4242/my-computer',
+  },
 });
 ```
 
@@ -94,10 +94,10 @@ class CustomApp extends App {
   async doSomething() {
     // Take a screenshot
     const screenshot = await this.computer.system.display.getScreenshot();
-    
+
     // Execute a command
     await this.computer.system.bash.execute({
-      command: 'echo "Hello from CustomApp"'
+      command: 'echo "Hello from CustomApp"',
     });
   }
 }
@@ -115,28 +115,28 @@ class BrowserApp extends App {
     super({
       name: 'browser',
       platform: 'linux',
-      autoStart: true
+      autoStart: true,
     });
   }
 
   async install(): Promise<void> {
     // Install Chrome browser
     await this.computer.system.bash.execute({
-      command: 'apt-get install -y chromium-browser'
+      command: 'apt-get install -y chromium-browser',
     });
   }
 
   async start(): Promise<void> {
     // Start Chrome in the background
     await this.computer.system.bash.execute({
-      command: 'chromium-browser --no-sandbox &'
+      command: 'chromium-browser --no-sandbox &',
     });
   }
 
   async stop(): Promise<void> {
     // Kill Chrome processes
     await this.computer.system.bash.execute({
-      command: 'pkill chromium'
+      command: 'pkill chromium',
     });
   }
 

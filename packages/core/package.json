@@ -38,7 +38,7 @@
     "build": "rm -rf dist && bun build index.ts --outdir dist --target node --minify && tsc --emitDeclarationOnly",
     "check-types": "tsc --noEmit",
     "generate-client": "bunx @hey-api/openapi-ts -c @hey-api/client-fetch -i src/openapi.json -o src/system/client",
-    "dev": "bun --watch dev.ts"
+    "dev": "bun --watch scripts/dev.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.0.5",

@@ -44,7 +44,9 @@ await runtime.start();
 
 // Listen for status changes
 runtime.on('status_changed', (event) => {
-  console.log(`Status changed from ${event.data.oldStatus} to ${event.data.newStatus}`);
+  console.log(
+    `Status changed from ${event.data.oldStatus} to ${event.data.newStatus}`
+  );
 });
 
 // Get runtime metrics
@@ -120,4 +122,4 @@ The core `Runtime` interface defines the following:
 
 ## License
 
-MIT 
+MIT
