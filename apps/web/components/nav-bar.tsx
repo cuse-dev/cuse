@@ -137,7 +137,10 @@ const Navbar = () => {
                     </a>
                   </Button>
                   <Button asChild>
-                    <a href={process.env.NEXT_PUBLIC_GITHUB_URL} target="_blank">
+                    <a
+                      href={process.env.NEXT_PUBLIC_GITHUB_URL}
+                      target="_blank"
+                    >
                       <FaGithub />
                       GitHub
                     </a>

@@ -1,5 +1,5 @@
 ---
-"@cusedev/linux": minor
+'@cusedev/linux': minor
 ---
 
 initial release

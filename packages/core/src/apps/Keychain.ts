@@ -1,5 +1,5 @@
 import { App } from '../App';
-import { AuthElement, KeychainItem } from '../system/types';
+import type { AuthElement, KeychainItem } from '../system/types';
 export type { AuthElement };
 export class Keychain extends App {
   public services: string[] = [];

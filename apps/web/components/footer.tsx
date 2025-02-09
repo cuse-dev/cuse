@@ -1,7 +1,4 @@
-import {
-  FaDiscord,
-  FaGithub,
-} from 'react-icons/fa';
+import { FaDiscord, FaGithub } from 'react-icons/fa';
 
 const sections = [
   {
@@ -37,7 +34,8 @@ const Footer = () => {
                   <p className="text-3xl font-semibold">cuse</p>
                 </span>
                 <p className="mt-6 text-muted-foreground">
-                  The framework for implementing computer use in your applications.
+                  The framework for implementing computer use in your
+                  applications.
                 </p>
               </div>
               <ul className="flex items-center space-x-6">
@@ -71,7 +69,8 @@ const Footer = () => {
           </div>
           <div className="mt-20 flex flex-col justify-between gap-4 border-t pt-8 text-sm font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-left">
             <p>
-              <span className="mr-2 font-bold text-primary">cuse</span>© All rights reserved.
+              <span className="mr-2 font-bold text-primary">cuse</span>© All
+              rights reserved.
             </p>
             <p>Made with ❤️ in Berlin by cuse</p>
           </div>

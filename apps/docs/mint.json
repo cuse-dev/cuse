@@ -13,7 +13,7 @@
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#000000",
-    "light": "#FFFFFF", 
+    "light": "#FFFFFF",
     "dark": "#000000",
     "anchors": {
       "from": "#666666",
@@ -46,17 +46,11 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction", 
-        "quickstart"
-      ]
+      "pages": ["introduction", "quickstart"]
     },
     {
       "group": "Core",
-      "pages": [
-        "core/computer", 
-        "core/app"
-      ]
+      "pages": ["core/computer", "core/app"]
     },
     {
       "group": "CLI",

@@ -1,0 +1,43 @@
+{
+  "name": "@cusedev/runtimes",
+  "version": "0.0.01",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && bun build index.ts --outdir dist --target node --minify && tsc --emitDeclarationOnly",
+    "check-types": "tsc --noEmit",
+    "dev": "bun --watch scripts/dev.ts",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/dockerode": "^3.3.34",
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "dockerode": "^4.0.4",
+    "vitest": "^3.0.4",
+    "zod": "^3.22.4",
+    "@e2b/code-interpreter": "^1.0.4",
+    "@e2b/desktop": "^1.0.3",
+    "e2b": "^1.0.7"
+  }
+}

@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  ArrowRight,
-  Copy,
-  Check,
-} from 'lucide-react';
+import { ArrowRight, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -64,7 +60,11 @@ const Hero = () => {
                 <Button size="lg">
                   <span className="flex items-center gap-2">
                     {packageManagers[selectedPM]}
-                    {hasCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {hasCopied ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
@@ -80,7 +80,10 @@ const Hero = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Button size="lg" variant="outline" asChild>
-              <a href={process.env.NEXT_PUBLIC_GITHUB_EXAMPLE_URL} target="_blank">
+              <a
+                href={process.env.NEXT_PUBLIC_GITHUB_EXAMPLE_URL}
+                target="_blank"
+              >
                 See the example
                 <ArrowRight />
               </a>

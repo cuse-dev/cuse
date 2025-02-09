@@ -15,16 +15,17 @@ The `new` command creates a new virtual computer in your cuse project. It sets u
 
 ## Options
 
-| Option | Description |
-| --- | --- |
+| Option          | Description                                                                          |
+| --------------- | ------------------------------------------------------------------------------------ |
 | `computer-name` | Optional name for the new computer. If not provided, you'll be prompted to enter one |
-| `--template` | Computer template (e.g., 'ubuntu') |
-| `--platform` | Platform choice (currently supports: 'linux') |
-| `--config` | Path to configuration file (defaults to 'cuse.config.yml') |
+| `--template`    | Computer template (e.g., 'ubuntu')                                                   |
+| `--platform`    | Platform choice (currently supports: 'linux')                                        |
+| `--config`      | Path to configuration file (defaults to 'cuse.config.yml')                           |
 
 ## Interactive Configuration
 
 If options are not provided, the command will prompt you for:
+
 1. Computer name (generates a unique name if not specified)
 2. Operating system selection
 
@@ -44,6 +45,7 @@ npx @cusedev/cli new my-computer --platform linux
 ## Output
 
 After successful creation, you'll see:
+
 - Container ID
 - Access URLs:
   - API endpoint: `http://localhost:4242/<computer-name>`
@@ -53,6 +55,7 @@ After successful creation, you'll see:
 ## Troubleshooting
 
 If services fail to start, the command will suggest:
+
 1. Checking if the proxy is running: `npx @cusedev/cli proxy status`
 2. Checking container logs: `docker logs <container-id>`
 3. Checking proxy logs: `docker logs cuse-proxy`
