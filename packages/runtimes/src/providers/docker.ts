@@ -248,7 +248,7 @@ export class DockerRuntime extends BaseRuntime {
 				}
 			} catch (error) {
 				// Ignore error if container doesn't exist (might have been auto-removed)
-				if ((error as any)?.statusCode !== 404) {
+				if ((error as { statusCode?: number })?.statusCode !== 404) {
 					throw error;
 				}
 			}
@@ -258,7 +258,7 @@ export class DockerRuntime extends BaseRuntime {
 				await container.remove({ force: true });
 			} catch (error) {
 				// Ignore 404 errors (container already removed)
-				if ((error as any)?.statusCode !== 404) {
+				if ((error as { statusCode?: number })?.statusCode !== 404) {
 					throw error;
 				}
 			}
@@ -516,8 +516,10 @@ export class DockerRuntime extends BaseRuntime {
 /**
  * Docker runtime provider implementation
  */
-export class DockerRuntimeProvider extends BaseRuntimeProvider {
-	async createInstance(options: RuntimeCreationOptions): Promise<BaseRuntime> {
+export class DockerRuntimeProvider extends BaseRuntimeProvider<DockerRuntime> {
+	async createInstance(
+		options: RuntimeCreationOptions,
+	): Promise<DockerRuntime> {
 		const platform = this.getPlatform(options.platformId);
 		if (!platform) {
 			throw new PlatformNotFoundError(options.platformId);

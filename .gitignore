@@ -134,3 +134,6 @@ dist
 
 # Quickstart
 apps/cuse-quickstart/
+
+# DS-Store
+.DS_Store

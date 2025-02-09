@@ -10,7 +10,7 @@ import type { BaseRuntimeConfig } from "./types";
  * RuntimeProvider is responsible for creating and managing runtime instances
  * for a specific infrastructure provider (e.g. Docker, AWS, etc.)
  */
-export interface RuntimeProvider {
+export interface RuntimeProvider<T extends BaseRuntime> {
 	/**
 	 * Get available platforms for this provider
 	 */
@@ -24,13 +24,15 @@ export interface RuntimeProvider {
 	/**
 	 * Create a new container for the specified platform
 	 */
-	createInstance(options: RuntimeCreationOptions): Promise<BaseRuntime>;
+	createInstance(options: RuntimeCreationOptions): Promise<T>;
 }
 
 /**
  * Base implementation of RuntimeProvider with common functionality
  */
-export abstract class BaseRuntimeProvider implements RuntimeProvider {
+export abstract class BaseRuntimeProvider<T extends BaseRuntime>
+	implements RuntimeProvider<T>
+{
 	protected platforms: Map<string, Platform>;
 	protected defaultPlatform: Platform;
 
@@ -77,7 +79,5 @@ export abstract class BaseRuntimeProvider implements RuntimeProvider {
 		};
 	}
 
-	abstract createInstance(
-		options: RuntimeCreationOptions,
-	): Promise<BaseRuntime>;
+	abstract createInstance(options: RuntimeCreationOptions): Promise<T>;
 }
