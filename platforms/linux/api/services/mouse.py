@@ -7,7 +7,7 @@ class MouseService:
 
     async def move(self, x: int, y: int, display_num: int = 1) -> None:
         """Move mouse to specified coordinates."""
-        pyautogui.moveTo(x, y, 0.5)
+        pyautogui.moveTo(x, y)
 
     async def left_click(self, display_num: int = 1) -> None:
         """Perform a left click."""
