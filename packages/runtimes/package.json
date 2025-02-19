@@ -1,7 +1,6 @@
 {
   "name": "@cusedev/runtimes",
-  "version": "0.0.01",
-  "private": true,
+  "version": "0.0.11",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -33,11 +32,12 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "dockerode": "^4.0.4",
-    "vitest": "^3.0.4",
-    "zod": "^3.22.4",
     "@e2b/code-interpreter": "^1.0.4",
     "@e2b/desktop": "^1.0.3",
-    "e2b": "^1.0.7"
+    "dockerode": "^4.0.4",
+    "e2b": "^1.0.7",
+    "unique-names-generator": "^4.7.1",
+    "vitest": "^3.0.4",
+    "zod": "^3.22.4"
   }
 }

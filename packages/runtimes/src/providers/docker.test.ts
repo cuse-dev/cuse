@@ -1,7 +1,6 @@
 import Docker from 'dockerode';
 import { afterAll, describe, expect, test, vi } from 'vitest';
-import type { Platform } from '../platform';
-import { RuntimeStatus } from '../types';
+import { Platform, RuntimeStatus } from '../types';
 import { createDockerProvider } from './docker';
 
 // Mock test platforms
@@ -49,23 +48,25 @@ describe('DockerRuntimeProvider', () => {
     await cleanupContainers();
   });
 
-  test('creates provider with platform', () => {
-    const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+  test('creates provider with platform', async () => {
+    const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
     expect(provider.getPlatforms()).toHaveLength(2);
     expect(provider.getPlatform('linux')).toBeDefined();
   });
 
   test('throws error for invalid default platform', () => {
-    expect(() => createDockerProvider(TEST_PLATFORMS, 'invalid')).toThrow();
+    expect(
+      async () => await createDockerProvider(TEST_PLATFORMS, 'invalid')
+    ).toThrow();
   });
 
   test('creates instance with correct configuration', async () => {
-    const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+    const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
     const instance = await provider.createInstance({
       platformId: 'linux',
       config: {
-        memoryMb: 4096,
-        cpuCount: 4,
+        id: 'test-linux',
+        name: 'test-container-ubuntu',
       },
     });
 
@@ -78,9 +79,13 @@ describe('DockerRuntimeProvider', () => {
   });
 
   test('uses default resources when not specified', async () => {
-    const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+    const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
     const instance = await provider.createInstance({
       platformId: 'linux',
+      config: {
+        id: 'test-linux',
+        name: 'test-container-ubuntu',
+      },
     });
 
     expect(instance.config.memoryMb).toBe(4096); // From defaultResources
@@ -88,10 +93,14 @@ describe('DockerRuntimeProvider', () => {
   });
 
   test('throws error for non-existent platform', async () => {
-    const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+    const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
     await expect(
       provider.createInstance({
         platformId: 'invalid',
+        config: {
+          id: 'test-linux',
+          name: 'test-container-ubuntu',
+        },
       })
     ).rejects.toThrow();
   });
@@ -99,8 +108,14 @@ describe('DockerRuntimeProvider', () => {
   test(
     'instance lifecycle events',
     async () => {
-      const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
-      const instance = await provider.createInstance({ platformId: 'linux' });
+      const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
+      const instance = await provider.createInstance({
+        platformId: 'linux',
+        config: {
+          id: 'test-linux',
+          name: 'test-container-ubuntu',
+        },
+      });
 
       // Mock event listener
       const statusChanges: RuntimeStatus[] = [];
@@ -127,8 +142,14 @@ describe('DockerRuntimeProvider', () => {
   );
 
   test('instance capabilities', async () => {
-    const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
-    const instance = await provider.createInstance({ platformId: 'linux' });
+    const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
+    const instance = await provider.createInstance({
+      platformId: 'linux',
+      config: {
+        id: 'test-linux',
+        name: 'test-container-ubuntu',
+      },
+    });
 
     expect(instance.capabilities).toEqual({
       supportsGpu: false,
@@ -144,10 +165,11 @@ describe('DockerRuntimeProvider', () => {
   test(
     'instance metrics',
     async () => {
-      const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+      const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
       const instance = await provider.createInstance({
         platformId: 'alpine-linux',
         config: {
+          name: 'test-container-alpine',
           metadata: {
             command: 'sleep 5',
             autoRemove: 'false', // Prevent auto-removal to ensure clean termination
@@ -177,10 +199,11 @@ describe('DockerRuntimeProvider', () => {
     test(
       'retrieves logs with default options',
       async () => {
-        const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'alpine-linux',
           config: {
+            name: 'test-container-alpine',
             metadata: {
               command: 'echo "Hello, World!"',
             },
@@ -203,10 +226,11 @@ describe('DockerRuntimeProvider', () => {
     test(
       'retrieves logs with tail option',
       async () => {
-        const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'alpine-linux',
           config: {
+            name: 'test-container-alpine',
             metadata: {
               command: 'for i in {1..10}; do echo "Line $i"; done',
             },
@@ -231,10 +255,11 @@ describe('DockerRuntimeProvider', () => {
     test(
       'retrieves logs with timestamps',
       async () => {
-        const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'alpine-linux',
           config: {
+            name: 'test-container-alpine',
             metadata: {
               command: 'echo "Hello, World!"',
             },
@@ -253,10 +278,11 @@ describe('DockerRuntimeProvider', () => {
     test(
       'follows logs with cleanup',
       async () => {
-        const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'alpine-linux',
           config: {
+            name: 'test-container-alpine',
             metadata: {
               command: 'for i in {1..5}; do echo "Line $i"; sleep 1; done',
             },
@@ -283,15 +309,27 @@ describe('DockerRuntimeProvider', () => {
     );
 
     test('throws error when getting logs from non-started container', async () => {
-      const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
-      const instance = await provider.createInstance({ platformId: 'linux' });
+      const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
+      const instance = await provider.createInstance({
+        platformId: 'linux',
+        config: {
+          id: 'test-linux',
+          name: 'test-container-ubuntu',
+        },
+      });
 
       await expect(instance.getLogs()).rejects.toThrow('container not started');
     });
 
     test('throws error when following logs from non-started container', async () => {
-      const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
-      const instance = await provider.createInstance({ platformId: 'linux' });
+      const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
+      const instance = await provider.createInstance({
+        platformId: 'linux',
+        config: {
+          id: 'test-linux',
+          name: 'test-container-ubuntu',
+        },
+      });
 
       await expect(
         instance.followLogs(
@@ -306,7 +344,7 @@ describe('DockerRuntimeProvider', () => {
     test(
       'passes environment variables to container',
       async () => {
-        const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
         const docker = new Docker();
         let containerId: string | undefined;
 
@@ -314,6 +352,7 @@ describe('DockerRuntimeProvider', () => {
         const instance = await provider.createInstance({
           platformId: 'alpine-linux',
           config: {
+            name: 'test-container-alpine',
             env: {
               TEST_VAR: 'test_value',
               ANOTHER_VAR: '123',
@@ -351,12 +390,14 @@ describe('DockerRuntimeProvider', () => {
     test(
       'reuses existing image',
       async () => {
-        const provider = createDockerProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createDockerProvider(TEST_PLATFORMS, 'linux');
 
         // First instance will pull the image if needed
         const instance1 = await provider.createInstance({
           platformId: 'linux',
           config: {
+            id: 'test-linux',
+            name: 'test-container-ubuntu',
             metadata: {
               command: 'echo "test"',
               autoRemove: 'false',
@@ -374,6 +415,8 @@ describe('DockerRuntimeProvider', () => {
         const instance2 = await provider.createInstance({
           platformId: 'linux',
           config: {
+            id: 'test-linux',
+            name: 'test-container-ubuntu',
             metadata: {
               command: 'echo "test"',
               autoRemove: 'false',

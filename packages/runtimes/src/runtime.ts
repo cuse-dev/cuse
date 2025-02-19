@@ -1,66 +1,25 @@
 import { EventEmitter } from 'node:events';
 import {
   type BaseRuntimeConfig,
+  Runtime,
   type RuntimeCapabilities,
   type RuntimeConnectionOptions,
-  type RuntimeEvent,
   RuntimeEventType,
+  RuntimeLogOptions,
   type RuntimeMetrics,
   RuntimeStatus,
 } from './types';
 
 /**
- * Log options for retrieving runtime instance logs
- */
-export interface RuntimeLogOptions {
-  /** Number of lines to retrieve from the end of logs. If not specified, returns all logs */
-  tail?: number;
-  /** Whether to follow the log output */
-  follow?: boolean;
-  /** Timestamp to retrieve logs since (ISO string or Date) */
-  since?: string | Date;
-  /** Whether to include timestamps in the log output */
-  timestamps?: boolean;
-}
-
-/**
- * Interface for container lifecycle management
- */
-export interface Runtime {
-  readonly id: string;
-  readonly name: string;
-  readonly status: RuntimeStatus;
-  readonly config: BaseRuntimeConfig;
-  readonly capabilities: RuntimeCapabilities;
-
-  // Lifecycle methods
-  start(): Promise<void>;
-  stop(): Promise<void>;
-  restart(): Promise<void>;
-  terminate(): Promise<void>;
-
-  // Status and metrics
-  getStatus(): Promise<RuntimeStatus>;
-  getMetrics(): Promise<RuntimeMetrics>;
-
-  // Logs
-  getLogs(options?: RuntimeLogOptions): Promise<string>;
-  followLogs(
-    onData: (data: string) => void,
-    onError: (error: Error) => void,
-    options?: Omit<RuntimeLogOptions, 'follow'>
-  ): Promise<() => void>;
-
-  // Event handling
-  on(event: RuntimeEventType, listener: (event: RuntimeEvent) => void): void;
-  off(event: RuntimeEventType, listener: (event: RuntimeEvent) => void): void;
-}
-
-/**
  * Abstract base class for container providers
  * Implements common functionality that all providers should have
  */
-export abstract class BaseRuntime extends EventEmitter implements Runtime {
+export abstract class BaseRuntime<
+    T extends BaseRuntimeConfig = BaseRuntimeConfig,
+  >
+  extends EventEmitter
+  implements Runtime
+{
   private _status: RuntimeStatus = RuntimeStatus.CREATING;
   private _metrics: RuntimeMetrics = {
     cpuUsagePercent: 0,
@@ -70,13 +29,10 @@ export abstract class BaseRuntime extends EventEmitter implements Runtime {
     diskUsageBytes: 0,
   };
 
-  readonly config: BaseRuntimeConfig;
+  readonly config: T;
   protected readonly connectionOptions: RuntimeConnectionOptions;
 
-  constructor(
-    config: BaseRuntimeConfig,
-    connectionOptions?: RuntimeConnectionOptions
-  ) {
+  constructor(config: T, connectionOptions?: RuntimeConnectionOptions) {
     super();
     this.config = config;
     this.connectionOptions = connectionOptions ?? {};

@@ -1,42 +1,26 @@
-import type {
-  Platform,
-  PlatformProviderConfig,
-  RuntimeCreationOptions,
-} from './platform';
 import type { BaseRuntime } from './runtime';
-import type { BaseRuntimeConfig } from './types';
-
-/**
- * RuntimeProvider is responsible for creating and managing runtime instances
- * for a specific infrastructure provider (e.g. Docker, AWS, etc.)
- */
-export interface RuntimeProvider<T extends BaseRuntime> {
-  /**
-   * Get available platforms for this provider
-   */
-  getPlatforms(): Platform[];
-
-  /**
-   * Get a specific platform by ID
-   */
-  getPlatform(id: string): Platform | undefined;
-
-  /**
-   * Create a new container for the specified platform
-   */
-  createInstance(options: RuntimeCreationOptions): Promise<T>;
-}
+import type {
+  BaseRuntimeConfig,
+  Platform,
+  RuntimeCreationOptions,
+  RuntimeProvider,
+  RuntimeProviderConfig,
+} from './types';
 
 /**
  * Base implementation of RuntimeProvider with common functionality
  */
-export abstract class BaseRuntimeProvider<T extends BaseRuntime>
-  implements RuntimeProvider<T>
+export abstract class BaseRuntimeProvider<
+  RuntimeType extends BaseRuntime = BaseRuntime,
+  RuntimeConfigType extends BaseRuntimeConfig = BaseRuntimeConfig,
+> implements RuntimeProvider<RuntimeType, RuntimeConfigType>
 {
   protected platforms: Map<string, Platform>;
   protected defaultPlatform: Platform;
 
-  constructor(config: PlatformProviderConfig) {
+  instances: Map<string, RuntimeType> = new Map();
+
+  constructor(config: RuntimeProviderConfig) {
     this.platforms = new Map(config.platforms.map((p) => [p.id, p]));
     const defaultPlatform = this.platforms.get(config.defaultPlatform);
     if (!defaultPlatform) {
@@ -53,31 +37,15 @@ export abstract class BaseRuntimeProvider<T extends BaseRuntime>
     return this.platforms.get(id);
   }
 
-  /**
-   * Create container configuration from platform and options
-   */
-  protected createContainerConfig(
-    platform: Platform,
-    options?: RuntimeCreationOptions['config']
-  ): BaseRuntimeConfig {
-    const defaultResources = platform.defaultResources ?? {
-      memoryMb: 2048,
-      cpuCount: 2,
-    };
-
-    return {
-      id: `${platform.id}-${Date.now()}`,
-      name: `${platform.name}`,
-      memoryMb: options?.memoryMb ?? defaultResources.memoryMb,
-      cpuCount: options?.cpuCount ?? defaultResources.cpuCount,
-      timeoutMs: options?.timeoutMs ?? 300000,
-      metadata: {
-        platformId: platform.id,
-        platformVersion: platform.version,
-        ...options?.metadata,
-      },
-    };
+  async listInstances(): Promise<RuntimeType[]> {
+    return Promise.all(Array.from(this.instances.values()));
   }
 
-  abstract createInstance(options: RuntimeCreationOptions): Promise<T>;
+  async getInstance(id: string): Promise<RuntimeType | undefined> {
+    return this.instances.get(id);
+  }
+
+  abstract createInstance(
+    options: RuntimeCreationOptions<RuntimeConfigType>
+  ): Promise<RuntimeType>;
 }
