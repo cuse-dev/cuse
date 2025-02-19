@@ -7,6 +7,7 @@ from .editor import EditorService
 from .keychain import KeychainService
 from .filesystem import FilesystemService
 from .action import ActionService
+from .task_queue import TaskQueueService
 
 class ServiceContainer:
     _instance: Optional['ServiceContainer'] = None
@@ -20,6 +21,7 @@ class ServiceContainer:
         self._keychain: Optional[KeychainService] = None
         self._filesystem: Optional[FilesystemService] = None
         self._action: Optional[ActionService] = None
+        self._task_queue: Optional[TaskQueueService] = None
 
     @classmethod
     def get_instance(cls) -> 'ServiceContainer':
@@ -84,6 +86,12 @@ class ServiceContainer:
                 mouse_service=self.mouse
             )
         return self._action
+
+    @property
+    def task_queue(self) -> TaskQueueService:
+        if self._task_queue is None:
+            self._task_queue = TaskQueueService()
+        return self._task_queue
 
 # Export services for convenience
 services = ServiceContainer.get_instance() 

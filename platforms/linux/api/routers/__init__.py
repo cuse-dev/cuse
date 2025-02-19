@@ -6,6 +6,7 @@ from .editor import router as editor_router
 from .keychain import router as keychain_router
 from .filesystem import router as filesystem_router
 from .action import router as action_router
+from .task_queue import router as task_queue_router
 
 __all__ = [
     'mouse_router',
@@ -15,5 +16,6 @@ __all__ = [
     'editor_router',
     'keychain_router',
     'filesystem_router',
-    'action_router'
+    'action_router',
+    'task_queue_router'
 ] 

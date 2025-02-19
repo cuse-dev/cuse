@@ -23,4 +23,6 @@ dependencies = [
     "typing_extensions==4.12.2",
     "uvicorn==0.32.1",
     "psutil==5.9.0",
+    "redis>=5.0.1",
+    "rq>=1.15.1",
 ]

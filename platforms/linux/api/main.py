@@ -12,7 +12,8 @@ from routers import (
     editor_router,
     keychain_router,
     filesystem_router,
-    action_router
+    action_router,
+    task_queue_router
 )
 
 # Configure logging
@@ -95,6 +96,7 @@ api_router.include_router(editor_router)
 api_router.include_router(keychain_router)
 api_router.include_router(filesystem_router)
 api_router.include_router(action_router)
+api_router.include_router(task_queue_router)
 
 # Include the API router
 app.include_router(api_router)
