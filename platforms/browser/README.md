@@ -34,6 +34,7 @@ Once the server is running, visit `/quickstart-computer/swagger` to view the int
 ### Endpoints
 
 #### Mouse Operations
+
 - `POST /api/mouse/move` - Move mouse cursor
 - `POST /api/mouse/left-click` - Perform left click
 - `POST /api/mouse/right-click` - Perform right click
@@ -43,6 +44,7 @@ Once the server is running, visit `/quickstart-computer/swagger` to view the int
 - `GET /api/mouse/position` - Get cursor position
 
 #### Keyboard Operations
+
 - `POST /api/keyboard/key` - Press a key
 - `POST /api/keyboard/type` - Type text
 - `POST /api/keyboard/hotkey` - Press hotkey combination
@@ -50,11 +52,13 @@ Once the server is running, visit `/quickstart-computer/swagger` to view the int
 - `POST /api/keyboard/release` - Release a held key
 
 #### Display Operations
+
 - `GET /api/display/screenshot` - Take screenshot
 - `GET /api/display/screen_size` - Get screen dimensions
 - `POST /api/display/scroll` - Scroll screen
 
 #### Browser-specific Operations
+
 - `POST /api/navigation/goto` - Navigate to URL
 - `POST /api/navigation/back` - Go back
 - `POST /api/navigation/forward` - Go forward
