@@ -6,3 +6,4 @@ export * from './src/types';
 
 // Provider implementations
 export * from './src/providers/docker';
+export * from './src/providers/e2b';

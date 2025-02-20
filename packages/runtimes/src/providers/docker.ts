@@ -1,23 +1,28 @@
-import type Docker from 'dockerode';
+import Docker from 'dockerode';
+import {
+  adjectives,
+  names,
+  uniqueNamesGenerator,
+} from 'unique-names-generator';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  type Platform,
-  PlatformNotFoundError,
-  type RuntimeCreationOptions,
-} from '../platform';
+import { z } from 'zod';
+import { PlatformNotFoundError } from '../platform';
 import { BaseRuntimeProvider } from '../provider';
-import { BaseRuntime, type RuntimeLogOptions } from '../runtime';
+import { BaseRuntime } from '../runtime';
 import {
+  BaseRuntimeConfig,
+  BaseRuntimeConfigSchema,
+  Platform,
   type RuntimeCapabilities,
   type RuntimeConnectionOptions,
+  RuntimeCreationOptions,
   RuntimeError,
   type RuntimeEvent,
   RuntimeEventType,
+  RuntimeLogOptions,
+  RuntimeProviderConfig,
   RuntimeStatus,
 } from '../types';
-
-// We need to import the actual Docker class for instantiation
-import { type default as Dockerode, default as RealDocker } from 'dockerode';
 
 /**
  * Helper function to demultiplex Docker logs
@@ -80,11 +85,81 @@ interface DockerStats {
   };
 }
 
+interface DockerRuntimeConfig extends BaseRuntimeConfig {
+  network: string;
+}
+
+const DockerRuntimeConfigSchema = BaseRuntimeConfigSchema.extend({
+  network: z.string(),
+});
+
+/**
+ * Default configuration values that will be used if not provided
+ */
+const DEFAULT_RUNTIME_CONFIG: Partial<DockerRuntimeConfig> = {
+  memoryMb: 4096,
+  cpuCount: 4,
+  timeoutMs: 300000, // 5 minutes
+  network: 'cuse-default',
+};
+
+/**
+ * Creates a complete runtime configuration by merging provided config with defaults
+ * and ensuring required fields like id and name are present
+ */
+export function createDockerRuntimeConfig(
+  partialConfig?: Partial<DockerRuntimeConfig>
+): DockerRuntimeConfig {
+  // Generate unique id if not provided
+  const id = partialConfig?.id ?? uuidv4();
+
+  // Generate default name if not provided
+  const name =
+    partialConfig?.name ??
+    uniqueNamesGenerator({
+      dictionaries: [adjectives, names],
+    });
+
+  // Get environment variables if they exist
+  const envConfig: Partial<DockerRuntimeConfig> = {
+    memoryMb: process.env.DEFAULT_RUNTIME_MEMORY_MB
+      ? parseInt(process.env.DEFAULT_RUNTIME_MEMORY_MB, 10)
+      : DEFAULT_RUNTIME_CONFIG.memoryMb!,
+    cpuCount: process.env.DEFAULT_RUNTIME_CPU_COUNT
+      ? parseInt(process.env.DEFAULT_RUNTIME_CPU_COUNT, 10)
+      : DEFAULT_RUNTIME_CONFIG.cpuCount!,
+    timeoutMs: process.env.DEFAULT_RUNTIME_TIMEOUT_MS
+      ? parseInt(process.env.DEFAULT_RUNTIME_TIMEOUT_MS, 10)
+      : DEFAULT_RUNTIME_CONFIG.timeoutMs!,
+    network: process.env.DEFAULT_RUNTIME_NETWORK
+      ? process.env.DEFAULT_RUNTIME_NETWORK
+      : DEFAULT_RUNTIME_CONFIG.network!,
+  };
+
+  // Merge configs in order of precedence:
+  // 1. Provided config
+  // 2. Environment variables
+  // 3. Default values
+  const mergedConfig = {
+    ...DEFAULT_RUNTIME_CONFIG,
+    ...envConfig,
+    ...partialConfig,
+    name,
+    id,
+  };
+
+  // Validate the config using zod schema
+  const validatedConfig = DockerRuntimeConfigSchema.parse(mergedConfig);
+
+  return validatedConfig;
+}
+
 /**
  * Docker-specific runtime implementation
  */
-export class DockerRuntime extends BaseRuntime {
+export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
   protected containerId: string | null = null;
+  container: Docker.Container | null = null;
   private readonly docker: Docker;
   private readonly platform: Platform;
   private readonly logBuffer: string[] = [];
@@ -92,26 +167,33 @@ export class DockerRuntime extends BaseRuntime {
 
   constructor(
     platform: Platform,
-    config: RuntimeCreationOptions['config'],
+    config: Partial<DockerRuntimeConfig>,
     connectionOptions?: RuntimeConnectionOptions
   ) {
-    const containerConfig = {
-      id: `${platform.id}-${uuidv4()}`, // Use UUID for unique container names
-      name: `${platform.name}`,
-      memoryMb: config?.memoryMb ?? platform.defaultResources?.memoryMb ?? 2048,
-      cpuCount: config?.cpuCount ?? platform.defaultResources?.cpuCount ?? 2,
-      timeoutMs: config?.timeoutMs ?? 300000,
-      env: config?.env ?? {},
+    const containerConfig = createDockerRuntimeConfig({
+      ...config,
+      memoryMb:
+        platform.defaultResources?.memoryMb ??
+        config?.memoryMb ??
+        DEFAULT_RUNTIME_CONFIG.memoryMb!,
+      cpuCount:
+        config?.cpuCount ??
+        platform.defaultResources?.cpuCount ??
+        DEFAULT_RUNTIME_CONFIG.cpuCount!,
+      timeoutMs: config?.timeoutMs ?? DEFAULT_RUNTIME_CONFIG.timeoutMs!,
       metadata: {
         platformId: platform.id,
         platformVersion: platform.version,
         ...config?.metadata,
       },
-    };
+      env: {
+        ...config?.env,
+      },
+    });
 
     super(containerConfig, connectionOptions);
     this.platform = platform;
-    this.docker = new RealDocker(connectionOptions);
+    this.docker = new Docker(connectionOptions);
   }
 
   get capabilities(): RuntimeCapabilities {
@@ -143,7 +225,7 @@ export class DockerRuntime extends BaseRuntime {
       );
 
       // Create runtime with AutoRemove configurable through metadata
-      const autoRemove = this.config.metadata?.autoRemove !== 'false';
+      const autoRemove = this.config.metadata?.autoRemove === 'true';
 
       // Create container with proper command handling
       let cmd: string[] | undefined;
@@ -154,7 +236,7 @@ export class DockerRuntime extends BaseRuntime {
         cmd = ['/bin/sh', '-c', 'echo "Hello, World!"'];
       }
 
-      const containerConfig: Dockerode.ContainerCreateOptions = {
+      const containerConfig: Docker.ContainerCreateOptions = {
         Image: this.platform.image,
         name: this.config.id,
         Cmd: cmd,
@@ -162,15 +244,21 @@ export class DockerRuntime extends BaseRuntime {
         AttachStdout: true,
         AttachStderr: true,
         HostConfig: {
-          Memory: this.config.memoryMb * 1024 * 1024,
-          NanoCpus: this.config.cpuCount * 1e9,
+          Memory: this.config.memoryMb
+            ? this.config.memoryMb * 1024 * 1024
+            : undefined,
+          NanoCpus: this.config.cpuCount
+            ? this.config.cpuCount * 1e9
+            : undefined,
           AutoRemove: autoRemove,
+          NetworkMode: this.config.network,
         },
         Env: envVars,
       };
 
       const container = await this.docker.createContainer(containerConfig);
       this.containerId = container.id;
+      this.container = container;
 
       // Start runtime
       await container.start();
@@ -513,31 +601,142 @@ export class DockerRuntime extends BaseRuntime {
   }
 }
 
+interface DockerRuntimeProviderConfig extends RuntimeProviderConfig {
+  socketPath?: string;
+  network: string;
+}
+interface DockerRuntimeCreationOptions
+  extends RuntimeCreationOptions<DockerRuntimeConfig> {}
+
 /**
  * Docker runtime provider implementation
  */
-export class DockerRuntimeProvider extends BaseRuntimeProvider<DockerRuntime> {
+export class DockerRuntimeProvider extends BaseRuntimeProvider<
+  DockerRuntime,
+  DockerRuntimeConfig
+> {
+  private readonly docker: Docker;
+  private readonly network: string;
+
+  constructor(config: DockerRuntimeProviderConfig) {
+    super(config);
+    this.docker = new Docker({
+      ...(config.socketPath ? { socketPath: config.socketPath } : {}),
+    });
+    this.network = config.network;
+  }
+
+  async ensureNetworkExists(): Promise<void> {
+    try {
+      const networks = await this.docker.listNetworks({
+        filters: { name: [this.network] },
+      });
+
+      if (networks.length === 0) {
+        await this.docker.createNetwork({
+          Name: this.network,
+          Driver: 'bridge',
+          CheckDuplicate: true,
+        });
+      }
+    } catch (error) {
+      throw new RuntimeError(
+        `Failed to ensure Docker network exists: ${(error as Error).message}`,
+        'DOCKER_NETWORK_ERROR'
+      );
+    }
+  }
+
   async createInstance(
-    options: RuntimeCreationOptions
+    options: DockerRuntimeCreationOptions
   ): Promise<DockerRuntime> {
+    await this.ensureNetworkExists();
+
     const platform = this.getPlatform(options.platformId);
     if (!platform) {
       throw new PlatformNotFoundError(options.platformId);
     }
 
-    return new DockerRuntime(platform, options.config);
+    const config: Partial<DockerRuntimeConfig> = {
+      network: this.network,
+      ...options.config,
+      metadata: {
+        platformId: platform.id,
+        platformVersion: platform.version,
+        ...options.config?.metadata,
+      },
+    };
+
+    const runtime = new DockerRuntime(platform, config);
+    this.instances.set(runtime.id, runtime);
+    return runtime;
+  }
+
+  async getInstance(id: string): Promise<DockerRuntime | undefined> {
+    return this.instances.get(id);
+  }
+
+  async listInstances(): Promise<DockerRuntime[]> {
+    return Array.from(this.instances.values());
+  }
+
+  async indexInstances(): Promise<Record<string, DockerRuntime>> {
+    await this.ensureNetworkExists();
+
+    const containers = await this.docker.listContainers({
+      all: true,
+      filters: {
+        ancestor: Array.from(this.platforms.values()).map((p) => p.image),
+      },
+    });
+
+    containers.forEach((container) => {
+      const platform = Array.from(this.platforms.values()).find((p) =>
+        p.image.includes(container.Image)
+      );
+      if (platform) {
+        this.instances.set(
+          container.Id,
+          new DockerRuntime(platform, {
+            id: container.Id,
+            name: container.Names[0]?.replace('/', '') || container.Id,
+            network: this.network,
+            memoryMb: platform.defaultResources?.memoryMb || 2048,
+            cpuCount: platform.defaultResources?.cpuCount || 2,
+            timeoutMs: 300000,
+            env: {},
+            metadata: {
+              platformId: platform.id,
+              platformVersion: platform.version,
+            },
+          })
+        );
+      }
+    });
+
+    return Object.fromEntries(this.instances.entries());
   }
 }
 
 /**
  * Create a Docker runtime provider with the specified platforms
  */
-export function createDockerProvider(
+export async function createDockerProvider(
   platforms: Platform[],
-  defaultPlatformId: string
-): DockerRuntimeProvider {
-  return new DockerRuntimeProvider({
+  defaultPlatformId: string,
+  network = 'cuse-default',
+  socketPath?: string
+): Promise<DockerRuntimeProvider> {
+  const provider = new DockerRuntimeProvider({
     platforms,
     defaultPlatform: defaultPlatformId,
-  });
+    socketPath,
+    network,
+  } as DockerRuntimeProviderConfig);
+
+  // Ensure network exists before indexing instances
+  await provider.ensureNetworkExists();
+  await provider.indexInstances();
+
+  return provider;
 }

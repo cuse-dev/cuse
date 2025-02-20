@@ -1,19 +1,92 @@
 import { Sandbox, type SandboxOpts } from '@e2b/code-interpreter';
 import { EventEmitter } from 'node:events';
+import {
+  adjectives,
+  names,
+  uniqueNamesGenerator,
+} from 'unique-names-generator';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  type Platform,
-  PlatformNotFoundError,
-  type RuntimeCreationOptions,
-} from '../platform';
+import { z } from 'zod';
+import { PlatformNotFoundError } from '../platform';
 import { BaseRuntimeProvider } from '../provider';
-import { BaseRuntime, type RuntimeLogOptions } from '../runtime';
+import { BaseRuntime } from '../runtime';
 import {
+  BaseRuntimeConfig,
+  BaseRuntimeConfigSchema,
+  Platform,
   type RuntimeCapabilities,
   type RuntimeConnectionOptions,
+  RuntimeCreationOptions,
   RuntimeError,
+  RuntimeLogOptions,
+  RuntimeProviderConfig,
   RuntimeStatus,
 } from '../types';
+
+interface E2BRuntimeConfig extends BaseRuntimeConfig {
+  sandboxCreateOptions?: SandboxOpts;
+}
+
+const E2BRuntimeConfigSchema = BaseRuntimeConfigSchema.extend({
+  sandboxCreateOptions: z.object({}).optional(),
+});
+
+/**
+ * Default configuration values that will be used if not provided
+ */
+const DEFAULT_RUNTIME_CONFIG: Partial<E2BRuntimeConfig> = {
+  memoryMb: 4096,
+  cpuCount: 4,
+  timeoutMs: 300000, // 5 minutes
+};
+
+/**
+ * Creates a complete runtime configuration by merging provided config with defaults
+ * and ensuring required fields like id and name are present
+ */
+export function createE2BRuntimeConfig(
+  partialConfig?: Partial<E2BRuntimeConfig>
+): E2BRuntimeConfig {
+  // Generate unique id if not provided
+  const id = partialConfig?.id ?? uuidv4();
+
+  // Generate default name if not provided
+  const name =
+    partialConfig?.name ??
+    uniqueNamesGenerator({
+      dictionaries: [adjectives, names],
+    });
+
+  // Get environment variables if they exist
+  const envConfig: Partial<E2BRuntimeConfig> = {
+    memoryMb: process.env.DEFAULT_RUNTIME_MEMORY_MB
+      ? parseInt(process.env.DEFAULT_RUNTIME_MEMORY_MB, 10)
+      : DEFAULT_RUNTIME_CONFIG.memoryMb!,
+    cpuCount: process.env.DEFAULT_RUNTIME_CPU_COUNT
+      ? parseInt(process.env.DEFAULT_RUNTIME_CPU_COUNT, 10)
+      : DEFAULT_RUNTIME_CONFIG.cpuCount!,
+    timeoutMs: process.env.DEFAULT_RUNTIME_TIMEOUT_MS
+      ? parseInt(process.env.DEFAULT_RUNTIME_TIMEOUT_MS, 10)
+      : DEFAULT_RUNTIME_CONFIG.timeoutMs!,
+  };
+
+  // Merge configs in order of precedence:
+  // 1. Provided config
+  // 2. Environment variables
+  // 3. Default values
+  const mergedConfig = {
+    ...DEFAULT_RUNTIME_CONFIG,
+    ...envConfig,
+    ...partialConfig,
+    name,
+    id,
+  };
+
+  // Validate the config using zod schema
+  const validatedConfig = E2BRuntimeConfigSchema.parse(mergedConfig);
+
+  return validatedConfig;
+}
 
 export class E2BRuntime extends BaseRuntime {
   sandbox: Sandbox | null = null;
@@ -39,23 +112,29 @@ export class E2BRuntime extends BaseRuntime {
 
   constructor(
     platform: Platform,
-    config: RuntimeCreationOptions['config'],
+    config: Partial<E2BRuntimeConfig>,
     connectionOptions?: RuntimeConnectionOptions
   ) {
-    const containerConfig = {
-      id: `${platform.id}-${uuidv4()}`,
-      name: `${platform.name}`,
-      memoryMb: config?.memoryMb ?? platform.defaultResources?.memoryMb ?? 2048,
-      cpuCount: config?.cpuCount ?? platform.defaultResources?.cpuCount ?? 2,
-      // 5 minutes in ms
-      timeoutMs: config?.timeoutMs ?? 300000,
-      env: config?.env ?? {},
+    const containerConfig = createE2BRuntimeConfig({
+      ...config,
+      memoryMb:
+        platform.defaultResources?.memoryMb ??
+        config?.memoryMb ??
+        DEFAULT_RUNTIME_CONFIG.memoryMb!,
+      cpuCount:
+        config?.cpuCount ??
+        platform.defaultResources?.cpuCount ??
+        DEFAULT_RUNTIME_CONFIG.cpuCount!,
+      timeoutMs: config?.timeoutMs ?? DEFAULT_RUNTIME_CONFIG.timeoutMs!,
       metadata: {
         platformId: platform.id,
         platformVersion: platform.version,
         ...config?.metadata,
       },
-    };
+      env: {
+        ...config?.env,
+      },
+    });
 
     super(containerConfig, connectionOptions);
     this.platform = platform;
@@ -85,7 +164,7 @@ export class E2BRuntime extends BaseRuntime {
 
       const sandboxCreateOptions: SandboxOpts = {
         logger: this.logger,
-        timeoutMs: this.config.timeoutMs,
+        timeoutMs: this.config.timeoutMs ?? 300000,
         apiKey: process.env.E2B_API_KEY,
         ...(this.config.env && { envs: this.config.env }),
       };
@@ -114,7 +193,10 @@ export class E2BRuntime extends BaseRuntime {
         }
       }
 
+      console.log('sandbox', this.sandbox);
       if (this.config.metadata?.command) {
+        console.log('running command', this.config.metadata.command);
+
         const out = await this.sandbox.commands.run(
           this.config.metadata.command
         );
@@ -132,17 +214,23 @@ export class E2BRuntime extends BaseRuntime {
 
       this.logger.info('Starting virtual display...');
 
+      console.log('starting all');
+
       await this.sandbox.commands.run('./start_all.sh', {
         onStderr: (data) => {
+          console.log('stderr', data);
           this.logger.error(data);
           //throw new Error(data);
         },
         onStdout: (data) => {
+          console.log('stdout', data);
           this.logger.info(`stdout: ${data}`);
         },
         timeoutMs: 300000,
         background: true,
       });
+
+      console.log('started all');
 
       this.logger.info('Starting computer api...');
       await this.sandbox.commands.run('./entrypoint.sh', {
@@ -334,23 +422,105 @@ export class E2BRuntime extends BaseRuntime {
   }
 }
 
-export class E2BRuntimeProvider extends BaseRuntimeProvider<E2BRuntime> {
-  async createInstance(options: RuntimeCreationOptions): Promise<E2BRuntime> {
+interface E2BRuntimeProviderConfig extends RuntimeProviderConfig {
+  apiKey?: string;
+}
+
+interface E2BRuntimeCreationOptions
+  extends RuntimeCreationOptions<E2BRuntimeConfig> {}
+
+/**
+ * E2B runtime provider implementation
+ */
+export class E2BRuntimeProvider extends BaseRuntimeProvider<
+  E2BRuntime,
+  E2BRuntimeConfig
+> {
+  private readonly apiKey: string;
+
+  constructor(config: E2BRuntimeProviderConfig) {
+    super(config);
+    this.apiKey = config.apiKey ?? process.env.E2B_API_KEY ?? '';
+
+    if (!this.apiKey) {
+      throw new Error(
+        'E2B_API_KEY must be set either in environment or provider config'
+      );
+    }
+  }
+
+  async createInstance(
+    options: E2BRuntimeCreationOptions
+  ): Promise<E2BRuntime> {
     const platform = this.getPlatform(options.platformId);
     if (!platform) {
       throw new PlatformNotFoundError(options.platformId);
     }
 
-    return new E2BRuntime(platform, options.config);
+    const config: Partial<E2BRuntimeConfig> = {
+      ...options.config,
+      metadata: {
+        platformId: platform.id,
+        platformVersion: platform.version,
+        ...options.config?.metadata,
+      },
+    };
+
+    const runtime = new E2BRuntime(platform, config);
+    this.instances.set(runtime.id, runtime);
+    return runtime;
+  }
+
+  async getInstance(id: string): Promise<E2BRuntime | undefined> {
+    return this.instances.get(id);
+  }
+
+  async listInstances(): Promise<E2BRuntime[]> {
+    return Array.from(this.instances.values());
+  }
+
+  async indexInstances(): Promise<Map<string, E2BRuntime>> {
+    // E2B doesn't provide a way to list existing sandboxes
+    // So we just return the current instances
+    const instances = await Sandbox.list();
+    const instancesMap = new Map<string, E2BRuntime>();
+    instances.forEach((instance) => {
+      const platform = this.getPlatforms().find(
+        (p) => p.image === instance.templateId
+      );
+      if (!platform) {
+        console.log(
+          'e2b platform not found by templateId',
+          instance.templateId
+        );
+      } else {
+        const runtime = new E2BRuntime(platform, {
+          id: instance.sandboxId,
+          name: instance.name ?? instance.sandboxId,
+        });
+        this.instances.set(runtime.id, runtime);
+        instancesMap.set(runtime.id, runtime);
+      }
+    });
+    return instancesMap;
   }
 }
 
-export function createE2BProvider(
+/**
+ * Create an E2B runtime provider with the specified platforms
+ */
+export async function createE2BProvider(
   platforms: Platform[],
-  defaultPlatformId: string
-): E2BRuntimeProvider {
-  return new E2BRuntimeProvider({
+  defaultPlatformId: string,
+  apiKey?: string
+): Promise<E2BRuntimeProvider> {
+  const provider = new E2BRuntimeProvider({
     platforms,
     defaultPlatform: defaultPlatformId,
+    apiKey: apiKey ?? process.env.E2B_API_KEY!,
   });
+
+  await provider.indexInstances();
+
+  return provider;
 }

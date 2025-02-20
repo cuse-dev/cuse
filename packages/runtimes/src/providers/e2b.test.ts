@@ -1,7 +1,6 @@
 import type { Sandbox } from '@e2b/code-interpreter';
 import { beforeEach, describe, expect, test } from 'vitest';
-import type { Platform } from '../platform';
-import { RuntimeStatus } from '../types';
+import { Platform, RuntimeStatus } from '../types';
 import { createE2BProvider } from './e2b';
 
 // Test platforms
@@ -33,9 +32,9 @@ describe('E2BRuntimeProvider', () => {
     }
   });
 
-  test('creates provider with platform', () => {
-    const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
-    expect(provider.getPlatforms()).toHaveLength(2);
+  test('creates provider with platform', async () => {
+    const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
+    expect(provider.getPlatforms()).toHaveLength(1);
     expect(provider.getPlatform('linux')).toBeDefined();
   });
 
@@ -44,10 +43,11 @@ describe('E2BRuntimeProvider', () => {
   });
 
   test('creates instance with correct configuration', async () => {
-    const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+    const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
     const instance = await provider.createInstance({
       platformId: 'linux',
       config: {
+        id: 'test-linux',
         memoryMb: 4096,
         cpuCount: 4,
       },
@@ -62,9 +62,12 @@ describe('E2BRuntimeProvider', () => {
   });
 
   test('uses default resources when not specified', async () => {
-    const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+    const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
     const instance = await provider.createInstance({
       platformId: 'linux',
+      config: {
+        id: 'test-linux',
+      },
     });
 
     expect(instance.config.memoryMb).toBe(4096); // From defaultResources
@@ -72,10 +75,13 @@ describe('E2BRuntimeProvider', () => {
   });
 
   test('throws error for non-existent platform', async () => {
-    const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+    const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
     await expect(
       provider.createInstance({
         platformId: 'invalid',
+        config: {
+          id: 'test-invalid',
+        },
       })
     ).rejects.toThrow();
   });
@@ -83,8 +89,13 @@ describe('E2BRuntimeProvider', () => {
   test(
     'instance lifecycle events',
     async () => {
-      const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
-      const instance = await provider.createInstance({ platformId: 'linux' });
+      const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
+      const instance = await provider.createInstance({
+        platformId: 'linux',
+        config: {
+          id: 'test-linux',
+        },
+      });
 
       // Track status changes
       const statusChanges: RuntimeStatus[] = [];
@@ -116,8 +127,13 @@ describe('E2BRuntimeProvider', () => {
   );
 
   test('instance capabilities', async () => {
-    const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
-    const instance = await provider.createInstance({ platformId: 'linux' });
+    const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
+    const instance = await provider.createInstance({
+      platformId: 'linux',
+      config: {
+        id: 'test-linux',
+      },
+    });
 
     expect(instance.capabilities).toEqual({
       supportsGpu: false,
@@ -133,9 +149,12 @@ describe('E2BRuntimeProvider', () => {
   test(
     'instance metrics',
     async () => {
-      const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+      const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
       const instance = await provider.createInstance({
         platformId: 'linux',
+        config: {
+          id: 'test-linux',
+        },
       });
 
       await instance.start();
@@ -158,10 +177,11 @@ describe('E2BRuntimeProvider', () => {
     test(
       'retrieves logs with default options',
       async () => {
-        const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'linux',
           config: {
+            id: 'test-linux',
             metadata: {
               command: 'echo "Hello, World!"',
             },
@@ -182,9 +202,12 @@ describe('E2BRuntimeProvider', () => {
     test(
       'retrieves logs with tail option',
       async () => {
-        const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'linux',
+          config: {
+            id: 'test-linux',
+          },
         });
 
         await instance.start();
@@ -207,9 +230,12 @@ describe('E2BRuntimeProvider', () => {
     test(
       'follows logs with cleanup',
       async () => {
-        const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'linux',
+          config: {
+            id: 'test-linux',
+          },
         });
 
         await instance.start();
@@ -241,15 +267,25 @@ describe('E2BRuntimeProvider', () => {
     );
 
     test('throws error when getting logs from non-started container', async () => {
-      const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
-      const instance = await provider.createInstance({ platformId: 'linux' });
+      const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
+      const instance = await provider.createInstance({
+        platformId: 'linux',
+        config: {
+          id: 'test-linux',
+        },
+      });
 
       await expect(instance.getLogs()).rejects.toThrow('sandbox not started');
     });
 
     test('throws error when following logs from non-started container', async () => {
-      const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
-      const instance = await provider.createInstance({ platformId: 'linux' });
+      const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
+      const instance = await provider.createInstance({
+        platformId: 'linux',
+        config: {
+          id: 'test-linux',
+        },
+      });
 
       await expect(
         instance.followLogs(
@@ -264,10 +300,11 @@ describe('E2BRuntimeProvider', () => {
     test(
       'passes environment variables to sandbox',
       async () => {
-        const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'linux',
           config: {
+            id: 'test-linux',
             env: {
               TEST_VAR: 'test_value',
               ANOTHER_VAR: '123',
@@ -294,10 +331,11 @@ describe('E2BRuntimeProvider', () => {
     test(
       'computer api is available',
       async () => {
-        const provider = createE2BProvider(TEST_PLATFORMS, 'linux');
+        const provider = await createE2BProvider(TEST_PLATFORMS, 'linux');
         const instance = await provider.createInstance({
           platformId: 'linux',
           config: {
+            id: 'test-linux',
             env: {
               DISPLAY: ':99',
               WIDTH: '1024',
