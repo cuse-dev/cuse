@@ -5,12 +5,11 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'platforms/linux/**'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME_LINUX: ${{ github.repository }}/linux
+  IMAGE_NAME_BROWSER: ${{ github.repository }}/browser
 
 jobs:
   build-and-push-linux:
@@ -18,6 +17,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.modified, 'platforms/linux/')
 
     steps:
       - name: Checkout repository
@@ -50,6 +50,48 @@ jobs:
         with:
           context: ./platforms/linux
           file: ./platforms/linux/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-and-push-browser:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.modified, 'platforms/browser/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get package version
+        id: package-version
+        run: echo "VERSION=$(node -p "require('./platforms/browser/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BROWSER }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+            type=raw,value=${{ steps.package-version.outputs.VERSION }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./platforms/browser/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
