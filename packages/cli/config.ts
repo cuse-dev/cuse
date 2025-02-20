@@ -5,4 +5,5 @@ export const PROXY_PORT = 4242;
  */
 export const imagesByOS: Record<string, string> = {
   linux: process.env.LINUX_IMAGE || 'ghcr.io/cuse-dev/cuse/linux:latest',
+  browser: process.env.BROWSER_IMAGE || 'ghcr.io/cuse-dev/cuse/browser:latest',
 };

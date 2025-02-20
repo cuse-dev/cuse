@@ -139,7 +139,7 @@ COPY --from=builder /root/.cache/ms-playwright /root/.cache/ms-playwright
 WORKDIR /app
 
 # Expose the port the app runs on
-EXPOSE 3003
+EXPOSE 3000
 
 # Set environment variables
 ENV NODE_ENV=production

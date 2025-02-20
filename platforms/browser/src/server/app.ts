@@ -52,6 +52,6 @@ const app = new Elysia()
       error: error,
     };
   })
-  .listen(3003);
+  .listen(3000);
 
 console.log(`Browser platform running at ${app.server?.url}`);
