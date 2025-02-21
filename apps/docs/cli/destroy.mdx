@@ -1,0 +1,40 @@
+---
+title: 'destroy'
+description: 'Remove all project computers'
+---
+
+## Usage
+
+```bash
+npx @cusedev/cli destroy [options]
+```
+
+## Description
+
+The `destroy` command removes all computers from your project, stopping and cleaning up any running containers. This is useful for completely resetting your project's computer environment.
+
+## Options
+
+| Option    | Alias | Description                        |
+| --------- | ----- | ---------------------------------- |
+| `--force` | `-f`  | Force removal without confirmation |
+| `--yes`   | `-y`  | Skip confirmation prompts          |
+
+## Example
+
+```bash
+# Destroy with confirmation prompt
+npx @cusedev/cli destroy
+
+# Force destroy without confirmation
+npx @cusedev/cli destroy --force
+
+# Skip all prompts
+npx @cusedev/cli destroy --yes
+```
+
+## Output
+
+- Confirmation of each computer being removed
+- Status of proxy server shutdown
+- Final confirmation when all computers are removed

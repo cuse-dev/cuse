@@ -1,0 +1,151 @@
+---
+title: 'Computer'
+description: 'Core interface for interacting with virtual computers'
+---
+
+## Overview
+
+The Computer class is the core interface for interacting with virtual computers in cuse. It provides access to system-level controls for display, mouse, keyboard, bash commands, and file editing capabilities.
+
+## Configuration
+
+When creating a new Computer instance, you can configure its properties:
+
+```typescript
+const computer = new Computer({
+  config: {
+    baseUrl: 'http://localhost:4242/your-computer-name',
+    display: {
+      // optional
+      number: 1,
+      width: 1024,
+      height: 768,
+    },
+  },
+});
+```
+
+### Configuration Options
+
+| Property         | Type   | Default  | Description                                  |
+| ---------------- | ------ | -------- | -------------------------------------------- |
+| `baseUrl`        | string | required | The base URL for the computer's API endpoint |
+| `display.number` | number | 1        | Display number to control                    |
+| `display.width`  | number | 1024     | Display width in pixels                      |
+| `display.height` | number | 768      | Display height in pixels                     |
+
+## System Interface
+
+The Computer provides access to several system-level interfaces through `computer.system`:
+
+### Display Control
+
+Control the computer's display:
+
+```typescript
+// Take a screenshot of the current display
+const screenshot = await computer.system.display.getScreenshot();
+```
+
+### Mouse Control
+
+Control mouse movements and clicks:
+
+```typescript
+// Move mouse cursor
+await computer.system.mouse.move({ x: 100, y: 200 });
+
+// Get cursor position
+const { x, y } = await computer.system.mouse.getPosition();
+
+// Mouse clicks
+await computer.system.mouse.leftClick();
+await computer.system.mouse.rightClick();
+await computer.system.mouse.middleClick();
+await computer.system.mouse.doubleClick();
+```
+
+### Keyboard Control
+
+Simulate keyboard input:
+
+```typescript
+// Press a single key
+await computer.system.keyboard.pressKey({ key: 'enter' });
+
+// Type text
+await computer.system.keyboard.type({ text: 'Hello, World!' });
+```
+
+### Bash Commands
+
+Execute shell commands:
+
+```typescript
+// Execute a command
+const output = await computer.system.bash.execute({
+  command: 'ls -la',
+});
+
+// Restart the system
+await computer.system.bash.restart();
+```
+
+### File Editor
+
+Manipulate files on the computer:
+
+```typescript
+// View file contents
+const content = await computer.system.editor.viewFile({
+  path: '/path/to/file',
+  viewRange: [1, 10], // optional: view specific lines
+});
+
+// Create a new file
+await computer.system.editor.createFile({
+  path: '/path/to/new/file',
+  content: 'Hello, World!', // optional
+});
+
+// Replace text in a file
+await computer.system.editor.replaceString({
+  path: '/path/to/file',
+  oldStr: 'old',
+  newStr: 'new',
+});
+
+// Insert text at a specific line
+await computer.system.editor.insertText({
+  path: '/path/to/file',
+  line: 5,
+  text: 'New line content',
+});
+
+// Undo last edit
+await computer.system.editor.undoLastEdit();
+```
+
+## Keychain
+
+The Computer class includes a `Keychain` app that allows you to manage your passwords and credentials.
+
+```typescript
+// Store credentials in keychain
+await computer.keychain.setKey('my-service', {
+  username: 'user123',
+  password: 'securepass',
+});
+
+// Load credentials from keychain
+const credentials = await computer.keychain.getKey('my-service');
+```
+
+## Lifecycle Methods
+
+The Computer class includes methods for managing the computer's lifecycle:
+
+```typescript
+// Shutdown the computer and all running apps
+computer.shutdown();
+```

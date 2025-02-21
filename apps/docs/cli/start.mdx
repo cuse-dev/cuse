@@ -1,0 +1,50 @@
+---
+title: 'start'
+description: 'Start virtual computers in your project'
+---
+
+## Usage
+
+```bash
+npx @cusedev/cli start [identifier] [options]
+```
+
+## Description
+
+The `start` command launches virtual computers in your project. You can start a specific computer by providing its identifier, or start all computers defined in your configuration.
+
+## Options
+
+| Option       | Description                                         |
+| ------------ | --------------------------------------------------- |
+| `identifier` | Optional identifier of a specific computer to start |
+| `--detached` | Run the computers in the background                 |
+| `--force`    | Force a restart if already running                  |
+
+## Example
+
+```bash
+# Start all computers in the project
+npx @cusedev/cli start
+
+# Start a specific computer
+npx @cusedev/cli start my-computer
+
+# Start in detached mode
+npx @cusedev/cli start --detached
+
+# Force restart a computer
+npx @cusedev/cli start my-computer --force
+```
+
+## Output
+
+For each started computer, you'll see:
+
+- Container ID
+- Access URLs:
+  - API endpoint: `http://localhost:4242/<computer-name>`
+  - noVNC interface: `http://localhost:4242/<computer-name>/novnc/`
+  - VNC endpoint: `http://localhost:4242/<computer-name>/vnc/`
+
+A summary table of all started computers will be displayed at the end.

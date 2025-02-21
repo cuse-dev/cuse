@@ -1,34 +1,42 @@
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 import '@repo/design-system/styles/globals.css';
-import './styles/web.css';
-import { Toolbar as CMSToolbar } from '@repo/cms/components/toolbar';
-import { DesignSystemProvider } from '@repo/design-system';
-import { fonts } from '@repo/design-system/lib/fonts';
-import { cn } from '@repo/design-system/lib/utils';
-import { Toolbar } from '@repo/feature-flags/components/toolbar';
+import { Analytics } from '@vercel/analytics/react';
+import type { Metadata } from 'next';
+import { IBM_Plex_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { Footer } from './components/footer';
-import { Header } from './components/header';
 
-type RootLayoutProperties = {
-  readonly children: ReactNode;
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: '--font-ibm-plex-mono',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+});
+
+export const metadata: Metadata = {
+  title: 'cuse - Computer Use Framework',
+  description:
+    'A framework for building AI agents that can interact with computers',
 };
 
-const RootLayout = ({ children }: RootLayoutProperties) => (
-  <html
-    lang="en"
-    className={cn(fonts, 'scroll-smooth')}
-    suppressHydrationWarning
-  >
-    <body>
-      <DesignSystemProvider>
-        <Header />
-        {children}
-        <Footer />
-      </DesignSystemProvider>
-      <Toolbar />
-      <CMSToolbar />
-    </body>
-  </html>
-);
-
-export default RootLayout;
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${ibmPlexMono.variable} font-mono antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <main>{children}</main>
+          <Toaster />
+          <Analytics />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

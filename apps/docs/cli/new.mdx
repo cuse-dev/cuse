@@ -1,0 +1,62 @@
+---
+title: 'new'
+description: 'Create a new virtual computer'
+---
+
+## Usage
+
+```bash
+npx @cusedev/cli new [computer-name] [options]
+```
+
+## Description
+
+The `new` command creates a new virtual computer in your cuse project. It sets up a Docker container with the specified operating system and configures the necessary services for remote access.
+
+## Options
+
+| Option          | Description                                                                          |
+| --------------- | ------------------------------------------------------------------------------------ |
+| `computer-name` | Optional name for the new computer. If not provided, you'll be prompted to enter one |
+| `--template`    | Computer template (e.g., 'ubuntu')                                                   |
+| `--platform`    | Platform choice (currently supports: 'linux')                                        |
+| `--config`      | Path to configuration file (defaults to 'cuse.config.yml')                           |
+
+## Interactive Configuration
+
+If options are not provided, the command will prompt you for:
+
+1. Computer name (generates a unique name if not specified)
+2. Operating system selection
+
+## Example
+
+```bash
+# Create a new computer with interactive prompts
+npx @cusedev/cli new
+
+# Create a computer with a specific name
+npx @cusedev/cli new my-computer
+
+# Create a computer with specific platform
+npx @cusedev/cli new my-computer --platform linux
+```
+
+## Output
+
+After successful creation, you'll see:
+
+- Container ID
+- Access URLs:
+  - API endpoint: `http://localhost:4242/<computer-name>`
+  - noVNC interface: `http://localhost:4242/<computer-name>/novnc/`
+  - VNC endpoint: `http://localhost:4242/<computer-name>/vnc/`
+
+## Troubleshooting
+
+If services fail to start, the command will suggest:
+
+1. Checking if the proxy is running: `npx @cusedev/cli proxy status`
+2. Checking container logs: `docker logs <container-id>`
+3. Checking proxy logs: `docker logs cuse-proxy`
+4. Trying to restart: `npx @cusedev/cli start <computer-name>`

@@ -1,0 +1,2493 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "/quickstart-computer"
+    }
+  ],
+  "paths": {
+    "/api/mouse/move": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Move Mouse Cursor",
+        "description": "Moves the mouse cursor to the specified X and Y coordinates on the screen.",
+        "operationId": "moveMouse",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MouseMoveRequest",
+                "description": "Coordinates to move the cursor to"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully moved the cursor"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/left-click": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Perform Left Click",
+        "description": "Performs a left mouse button click at the current cursor position.",
+        "operationId": "leftClick",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisplayRequest",
+                "description": "Display settings for the click operation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully performed left click"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/right-click": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Perform Right Click",
+        "description": "Performs a right mouse button click at the current cursor position.",
+        "operationId": "rightClick",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisplayRequest",
+                "description": "Display settings for the click operation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully performed right click"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/middle-click": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Perform Middle Click",
+        "description": "Performs a middle mouse button (scroll wheel) click at the current cursor position.",
+        "operationId": "middleClick",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisplayRequest",
+                "description": "Display settings for the click operation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully performed middle click"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/double-click": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Perform Double Click",
+        "description": "Performs a double left click at the current cursor position.",
+        "operationId": "doubleClick",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisplayRequest",
+                "description": "Display settings for the click operation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully performed double click"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/drag": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Drag Mouse",
+        "description": "Performs a drag operation from the current cursor position to the specified coordinates.",
+        "operationId": "dragMouse",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MouseMoveRequest",
+                "description": "Target coordinates for the drag operation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully performed drag operation"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/position": {
+      "get": {
+        "tags": ["mouse"],
+        "summary": "Get Cursor Position",
+        "description": "Gets the current position of the mouse cursor on the screen.",
+        "operationId": "getMousePosition",
+        "parameters": [
+          {
+            "name": "display_num",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Display Num"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved cursor position",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Getmouseposition"
+                },
+                "example": {
+                  "x": 500,
+                  "y": 300
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mouse/scroll": {
+      "post": {
+        "tags": ["mouse"],
+        "summary": "Scroll Mouse Wheel",
+        "description": "Scrolls the mouse wheel by the specified number of clicks.",
+        "operationId": "scrollMouse",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScrollRequest",
+                "description": "Scroll operation parameters"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully performed scroll operation"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keyboard/key": {
+      "post": {
+        "tags": ["keyboard"],
+        "summary": "Press Key",
+        "description": "Presses a single keyboard key.",
+        "operationId": "pressKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyPressRequest",
+                "description": "Key to press"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully pressed the key",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keyboard/type": {
+      "post": {
+        "tags": ["keyboard"],
+        "summary": "Type Text",
+        "description": "Types a sequence of text with configurable speed and grouping.",
+        "operationId": "typeText",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypeTextRequest",
+                "description": "Text to type and typing parameters"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully typed the text",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keyboard/hotkey": {
+      "post": {
+        "tags": ["keyboard"],
+        "summary": "Press Hotkey Combination",
+        "description": "Presses multiple keys simultaneously to perform a hotkey combination.",
+        "operationId": "pressHotkey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HotkeyRequest",
+                "description": "Keys to press simultaneously"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully pressed the hotkey combination",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keyboard/hold": {
+      "post": {
+        "tags": ["keyboard"],
+        "summary": "Hold Key",
+        "description": "Holds down a keyboard key without releasing it.",
+        "operationId": "holdKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyPressRequest",
+                "description": "Key to hold down"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully started holding the key",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keyboard/release": {
+      "post": {
+        "tags": ["keyboard"],
+        "summary": "Release Key",
+        "description": "Releases a previously held keyboard key.",
+        "operationId": "releaseKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyPressRequest",
+                "description": "Key to release"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully released the key",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/display/screenshot": {
+      "get": {
+        "tags": ["display"],
+        "summary": "Take Screenshot",
+        "description": "Captures a screenshot of the specified display.",
+        "operationId": "takeScreenshot",
+        "parameters": [
+          {
+            "name": "display_num",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Display Num"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully captured screenshot",
+            "content": {
+              "image/png": {}
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/display/screen_size": {
+      "get": {
+        "tags": ["display"],
+        "summary": "Get Screen Size",
+        "description": "Retrieves the dimensions of the specified display.",
+        "operationId": "getScreenSize",
+        "parameters": [
+          {
+            "name": "display_num",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Display Num"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved screen size",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Getscreensize"
+                },
+                "example": {
+                  "width": 1920,
+                  "height": 1080
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/display/locate": {
+      "post": {
+        "tags": ["display"],
+        "summary": "Locate Image on Screen",
+        "description": "Searches for a specified image on the screen and returns its location if found.",
+        "operationId": "locateImage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageLocateRequest",
+                "description": "Image search parameters"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully searched for image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Locateimage"
+                },
+                "example": {
+                  "x": 100,
+                  "y": 100,
+                  "width": 50,
+                  "height": 50
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/display/pixel_color": {
+      "post": {
+        "tags": ["display"],
+        "summary": "Get Pixel Color",
+        "description": "Retrieves the RGB color values of a pixel at the specified coordinates.",
+        "operationId": "getPixelColor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PixelColorRequest",
+                "description": "Pixel coordinates"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved pixel color",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "prefixItems": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ],
+                  "type": "array",
+                  "maxItems": 3,
+                  "minItems": 3,
+                  "title": "Response Getpixelcolor"
+                },
+                "example": [255, 128, 0]
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bash/command": {
+      "post": {
+        "tags": ["bash"],
+        "summary": "Execute Shell Command",
+        "description": "Executes a shell command and returns its output or background process information.",
+        "operationId": "executeCommand",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully executed command",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResponse"
+                },
+                "example": {
+                  "output": "total 20\ndrwxr-xr-x  3 user  group   96 Mar 10 12:34 .",
+                  "status": "completed"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bash/process/{pid}/output": {
+      "get": {
+        "tags": ["bash"],
+        "summary": "Get Process Output",
+        "description": "Retrieves the output of a background process by its ID.",
+        "operationId": "getProcessOutput",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Pid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved process output",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResponse"
+                },
+                "example": {
+                  "output": "Processing...\n50% complete",
+                  "process_id": 1234,
+                  "status": "background"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Process not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bash/process/{pid}": {
+      "delete": {
+        "tags": ["bash"],
+        "summary": "Terminate Process",
+        "description": "Terminates a background process by its ID.",
+        "operationId": "terminateProcess",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Pid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully terminated process"
+          },
+          "404": {
+            "description": "Process not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bash/restart": {
+      "post": {
+        "tags": ["bash"],
+        "summary": "Restart System",
+        "description": "Restarts the system services.",
+        "operationId": "restartSystem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestartParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully initiated restart"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bash/processes/managed": {
+      "get": {
+        "tags": ["bash"],
+        "summary": "List Managed Processes",
+        "description": "Lists all background processes managed by the system.",
+        "operationId": "listManagedProcesses",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved process list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProcessInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Listmanagedprocesses"
+                },
+                "example": [
+                  {
+                    "pid": 1234,
+                    "command": "long-running-task",
+                    "status": "running",
+                    "output": "Processing...\n50% complete"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/editor/view": {
+      "post": {
+        "tags": ["editor"],
+        "summary": "View File Contents",
+        "description": "Retrieves the contents of a file, optionally within a specified line range.",
+        "operationId": "viewFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ViewParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved file contents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Viewfile"
+                },
+                "example": "Line 1\nLine 2\nLine 3"
+              }
+            }
+          },
+          "404": {
+            "description": "File not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/editor/create": {
+      "post": {
+        "tags": ["editor"],
+        "summary": "Create New File",
+        "description": "Creates a new file with optional initial content.",
+        "operationId": "createFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully created file"
+          },
+          "400": {
+            "description": "File already exists"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/editor/str-replace": {
+      "post": {
+        "tags": ["editor"],
+        "summary": "Replace String",
+        "description": "Replaces all occurrences of a string in a file with a new string.",
+        "operationId": "replaceString",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrReplaceParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully replaced string"
+          },
+          "404": {
+            "description": "File not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/editor/insert": {
+      "post": {
+        "tags": ["editor"],
+        "summary": "Insert Text",
+        "description": "Inserts text at a specified line number in a file.",
+        "operationId": "insertText",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsertParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully inserted text"
+          },
+          "404": {
+            "description": "File not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/editor/undo-edit": {
+      "post": {
+        "tags": ["editor"],
+        "summary": "Undo Last Edit",
+        "description": "Reverts the last edit made to a file.",
+        "operationId": "undoEdit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UndoEditParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully undid last edit"
+          },
+          "404": {
+            "description": "File not found or no edits to undo"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keychain/set-item": {
+      "post": {
+        "tags": ["keychain"],
+        "summary": "Store Keychain Item",
+        "description": "Stores a new keychain item for a service.",
+        "operationId": "setKeychainItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetItemParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully stored keychain item"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keychain/delete-item": {
+      "post": {
+        "tags": ["keychain"],
+        "summary": "Delete Keychain Item",
+        "description": "Deletes a keychain item for a service.",
+        "operationId": "deleteKeychainItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteItemParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully deleted keychain item"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keychain/list-services": {
+      "get": {
+        "tags": ["keychain"],
+        "summary": "List Services",
+        "description": "Lists all services with stored keychain items.",
+        "operationId": "listKeychainServices",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved service list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response Listkeychainservices"
+                },
+                "example": ["github", "gitlab", "aws"]
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/keychain/authenticate": {
+      "post": {
+        "tags": ["keychain"],
+        "summary": "Authenticate Service",
+        "description": "Verifies authentication elements against stored keychain item.",
+        "operationId": "authenticateService",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully performed authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "title": "Response Authenticateservice"
+                },
+                "example": true
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid authentication elements"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/filesystem/list": {
+      "post": {
+        "tags": ["filesystem"],
+        "summary": "List Directory Contents",
+        "description": "Lists the contents of a directory with optional filtering.",
+        "operationId": "listDirectory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListDirectoryParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully listed directory contents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FileInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Listdirectory"
+                },
+                "example": [
+                  {
+                    "name": "document.txt",
+                    "path": "/home/user/documents/document.txt",
+                    "type": "file",
+                    "size": 1024,
+                    "modified_time": "2024-03-10T12:34:56",
+                    "is_hidden": false,
+                    "extension": "txt"
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "Directory not found"
+          },
+          "400": {
+            "description": "Not a directory"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/filesystem/tree": {
+      "post": {
+        "tags": ["filesystem"],
+        "summary": "Get Directory Tree",
+        "description": "Generates a tree representation of a directory structure.",
+        "operationId": "getDirectoryTree",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreeParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated directory tree",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Getdirectorytree"
+                },
+                "example": {
+                  "name": "project",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "src",
+                      "type": "directory",
+                      "children": [
+                        {
+                          "name": "main.py",
+                          "type": "file"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Directory not found"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/filesystem/search": {
+      "post": {
+        "tags": ["filesystem"],
+        "summary": "Search Files",
+        "description": "Searches for files matching a pattern in a directory tree.",
+        "operationId": "searchFiles",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully searched for files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FileInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Searchfiles"
+                },
+                "example": [
+                  {
+                    "name": "document.txt",
+                    "path": "/home/user/documents/document.txt",
+                    "type": "file",
+                    "size": 1024,
+                    "modified_time": "2024-03-10T12:34:56",
+                    "is_hidden": false,
+                    "extension": "txt"
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "Root directory not found"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/filesystem/info/{path}": {
+      "get": {
+        "tags": ["filesystem"],
+        "summary": "Get Path Info",
+        "description": "Gets detailed information about a file or directory.",
+        "operationId": "getPathInfo",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved path information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileInfo"
+                },
+                "example": {
+                  "name": "document.txt",
+                  "path": "/home/user/documents/document.txt",
+                  "type": "file",
+                  "size": 1024,
+                  "modified_time": "2024-03-10T12:34:56",
+                  "is_hidden": false,
+                  "extension": "txt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Path not found"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api": {
+      "get": {
+        "summary": "Api Root",
+        "operationId": "api_root_api_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthElement": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "coordinates": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Coordinates"
+          }
+        },
+        "type": "object",
+        "required": ["type", "coordinates"],
+        "title": "AuthElement"
+      },
+      "AuthenticateParams": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "description": "Service identifier to authenticate",
+            "example": "github"
+          },
+          "authElements": {
+            "items": {
+              "$ref": "#/components/schemas/AuthElement"
+            },
+            "type": "array",
+            "title": "Authelements",
+            "description": "Authentication elements to verify"
+          }
+        },
+        "type": "object",
+        "required": ["service", "authElements"],
+        "title": "AuthenticateParams",
+        "example": {
+          "authElements": [
+            {
+              "type": "username",
+              "value": "user@example.com"
+            },
+            {
+              "type": "password",
+              "value": "secret123"
+            }
+          ],
+          "service": "github"
+        }
+      },
+      "CommandParams": {
+        "properties": {
+          "command": {
+            "type": "string",
+            "title": "Command",
+            "description": "Shell command to execute",
+            "example": "ls -la"
+          }
+        },
+        "type": "object",
+        "required": ["command"],
+        "title": "CommandParams",
+        "example": {
+          "command": "ls -la"
+        }
+      },
+      "CommandResponse": {
+        "properties": {
+          "output": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output",
+            "description": "Command output if available",
+            "example": "total 20\ndrwxr-xr-x  3 user  group   96 Mar 10 12:34 ."
+          },
+          "process_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Id",
+            "description": "Process ID if running in background",
+            "example": 1234
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Command status: 'completed' or 'background'",
+            "default": "completed",
+            "example": "completed"
+          }
+        },
+        "type": "object",
+        "title": "CommandResponse",
+        "example": {
+          "output": "total 20\ndrwxr-xr-x  3 user  group   96 Mar 10 12:34 .",
+          "status": "completed"
+        }
+      },
+      "CreateParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "File path to create",
+            "example": "/path/to/newfile.txt"
+          },
+          "file_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Text",
+            "description": "Initial file contents",
+            "example": "Hello, World!"
+          }
+        },
+        "type": "object",
+        "required": ["path"],
+        "title": "CreateParams",
+        "example": {
+          "file_text": "Hello, World!",
+          "path": "/path/to/newfile.txt"
+        }
+      },
+      "DeleteItemParams": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "description": "Service identifier to delete",
+            "example": "github"
+          }
+        },
+        "type": "object",
+        "required": ["service"],
+        "title": "DeleteItemParams",
+        "example": {
+          "service": "github"
+        }
+      },
+      "DisplayRequest": {
+        "properties": {
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "title": "DisplayRequest",
+        "example": {
+          "display_num": 1
+        }
+      },
+      "FileInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "File or directory name",
+            "example": "document.txt"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Full path to the file or directory",
+            "example": "/home/user/documents/document.txt"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Type of entry: 'file' or 'directory'",
+            "example": "file"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Size in bytes",
+            "example": 1024
+          },
+          "modified_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Modified Time",
+            "description": "Last modification time",
+            "example": "2024-03-10T12:34:56"
+          },
+          "is_hidden": {
+            "type": "boolean",
+            "title": "Is Hidden",
+            "description": "Whether the file/directory is hidden",
+            "example": false
+          },
+          "extension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extension",
+            "description": "File extension if applicable",
+            "example": "txt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "path",
+          "type",
+          "size",
+          "modified_time",
+          "is_hidden"
+        ],
+        "title": "FileInfo",
+        "example": {
+          "extension": "txt",
+          "is_hidden": false,
+          "modified_time": "2024-03-10T12:34:56",
+          "name": "document.txt",
+          "path": "/home/user/documents/document.txt",
+          "size": 1024,
+          "type": "file"
+        }
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HotkeyRequest": {
+        "properties": {
+          "keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Keys",
+            "description": "List of keys to press simultaneously",
+            "example": ["ctrl", "c"]
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "required": ["keys"],
+        "title": "HotkeyRequest",
+        "example": {
+          "display_num": 1,
+          "keys": ["ctrl", "c"]
+        }
+      },
+      "ImageLocateRequest": {
+        "properties": {
+          "image_path": {
+            "type": "string",
+            "title": "Image Path",
+            "description": "Path to the image file to locate on screen",
+            "example": "/path/to/image.png"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Confidence",
+            "description": "Confidence threshold for image matching (0.0 to 1.0)",
+            "default": 0.9,
+            "example": 0.9
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "required": ["image_path"],
+        "title": "ImageLocateRequest",
+        "example": {
+          "confidence": 0.9,
+          "display_num": 1,
+          "image_path": "/path/to/image.png"
+        }
+      },
+      "InsertParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "File path to modify",
+            "example": "/path/to/file.txt"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Text to insert",
+            "example": "New line of text"
+          },
+          "insert_line": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insert Line",
+            "description": "Line number to insert at (1-based)",
+            "example": 5
+          }
+        },
+        "type": "object",
+        "required": ["path", "text"],
+        "title": "InsertParams",
+        "example": {
+          "insert_line": 5,
+          "path": "/path/to/file.txt",
+          "text": "New line of text"
+        }
+      },
+      "KeyPressRequest": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "description": "Key to press (e.g., 'a', 'enter', 'shift', 'ctrl', 'alt', etc.)",
+            "example": "enter"
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "required": ["key"],
+        "title": "KeyPressRequest",
+        "example": {
+          "display_num": 1,
+          "key": "enter"
+        }
+      },
+      "KeychainItem": {
+        "properties": {
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          },
+          "token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Token"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "otp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Otp"
+          }
+        },
+        "type": "object",
+        "title": "KeychainItem"
+      },
+      "ListDirectoryParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Directory path to list",
+            "example": "/home/user/documents"
+          },
+          "include_hidden": {
+            "type": "boolean",
+            "title": "Include Hidden",
+            "description": "Whether to include hidden files/directories",
+            "default": false,
+            "example": false
+          },
+          "pattern": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pattern",
+            "description": "Glob pattern to filter results",
+            "example": "*.txt"
+          }
+        },
+        "type": "object",
+        "required": ["path"],
+        "title": "ListDirectoryParams",
+        "example": {
+          "include_hidden": false,
+          "path": "/home/user/documents",
+          "pattern": "*.txt"
+        }
+      },
+      "MouseMoveRequest": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X",
+            "description": "X coordinate to move the cursor to",
+            "example": 500
+          },
+          "y": {
+            "type": "integer",
+            "title": "Y",
+            "description": "Y coordinate to move the cursor to",
+            "example": 300
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "required": ["x", "y"],
+        "title": "MouseMoveRequest",
+        "example": {
+          "display_num": 1,
+          "x": 500,
+          "y": 300
+        }
+      },
+      "PixelColorRequest": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X",
+            "description": "X coordinate of the pixel",
+            "example": 100
+          },
+          "y": {
+            "type": "integer",
+            "title": "Y",
+            "description": "Y coordinate of the pixel",
+            "example": 100
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "required": ["x", "y"],
+        "title": "PixelColorRequest",
+        "example": {
+          "display_num": 1,
+          "x": 100,
+          "y": 100
+        }
+      },
+      "ProcessInfo": {
+        "properties": {
+          "pid": {
+            "type": "integer",
+            "title": "Pid",
+            "description": "Process ID",
+            "example": 1234
+          },
+          "command": {
+            "type": "string",
+            "title": "Command",
+            "description": "Command that was executed",
+            "example": "ls -la"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Current status of the process",
+            "example": "running"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output",
+            "description": "Process output if available",
+            "example": "total 20\ndrwxr-xr-x  3 user  group   96 Mar 10 12:34 ."
+          }
+        },
+        "type": "object",
+        "required": ["pid", "command", "status"],
+        "title": "ProcessInfo",
+        "example": {
+          "command": "ls -la",
+          "output": "total 20\ndrwxr-xr-x  3 user  group   96 Mar 10 12:34 .",
+          "pid": 1234,
+          "status": "running"
+        }
+      },
+      "RestartParams": {
+        "properties": {},
+        "type": "object",
+        "title": "RestartParams"
+      },
+      "ScrollRequest": {
+        "properties": {
+          "clicks": {
+            "type": "integer",
+            "title": "Clicks",
+            "description": "Number of clicks to scroll. Positive numbers scroll up, negative numbers scroll down",
+            "example": 3
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          }
+        },
+        "type": "object",
+        "required": ["clicks"],
+        "title": "ScrollRequest",
+        "example": {
+          "clicks": 3,
+          "display_num": 1
+        }
+      },
+      "SearchParams": {
+        "properties": {
+          "root_path": {
+            "type": "string",
+            "title": "Root Path",
+            "description": "Root directory to start search from",
+            "example": "/home/user"
+          },
+          "pattern": {
+            "type": "string",
+            "title": "Pattern",
+            "description": "Glob pattern to search for",
+            "example": "*.txt"
+          },
+          "max_results": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "title": "Max Results",
+            "description": "Maximum number of results to return",
+            "default": 100,
+            "example": 100
+          },
+          "include_hidden": {
+            "type": "boolean",
+            "title": "Include Hidden",
+            "description": "Whether to include hidden files/directories",
+            "default": false,
+            "example": false
+          }
+        },
+        "type": "object",
+        "required": ["root_path", "pattern"],
+        "title": "SearchParams",
+        "example": {
+          "include_hidden": false,
+          "max_results": 100,
+          "pattern": "*.txt",
+          "root_path": "/home/user"
+        }
+      },
+      "SetItemParams": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "description": "Service identifier",
+            "example": "github"
+          },
+          "item": {
+            "$ref": "#/components/schemas/KeychainItem",
+            "description": "Keychain item to store"
+          }
+        },
+        "type": "object",
+        "required": ["service", "item"],
+        "title": "SetItemParams",
+        "example": {
+          "item": {
+            "password": "secret123",
+            "url": "https://github.com",
+            "username": "user@example.com"
+          },
+          "service": "github"
+        }
+      },
+      "StrReplaceParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "File path to modify",
+            "example": "/path/to/file.txt"
+          },
+          "old_str": {
+            "type": "string",
+            "title": "Old Str",
+            "description": "String to replace",
+            "example": "old text"
+          },
+          "new_str": {
+            "type": "string",
+            "title": "New Str",
+            "description": "Replacement string",
+            "example": "new text"
+          }
+        },
+        "type": "object",
+        "required": ["path", "old_str", "new_str"],
+        "title": "StrReplaceParams",
+        "example": {
+          "new_str": "new text",
+          "old_str": "old text",
+          "path": "/path/to/file.txt"
+        }
+      },
+      "TreeParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Root directory path",
+            "example": "/home/user/project"
+          },
+          "max_depth": {
+            "type": "integer",
+            "minimum": 1,
+            "title": "Max Depth",
+            "description": "Maximum depth to traverse",
+            "default": 3,
+            "example": 3
+          },
+          "include_hidden": {
+            "type": "boolean",
+            "title": "Include Hidden",
+            "description": "Whether to include hidden files/directories",
+            "default": false,
+            "example": false
+          },
+          "pattern": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pattern",
+            "description": "Glob pattern to filter results",
+            "example": "*.py"
+          }
+        },
+        "type": "object",
+        "required": ["path"],
+        "title": "TreeParams",
+        "example": {
+          "include_hidden": false,
+          "max_depth": 3,
+          "path": "/home/user/project",
+          "pattern": "*.py"
+        }
+      },
+      "TypeTextRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Text to type",
+            "example": "Hello, World!"
+          },
+          "display_num": {
+            "type": "integer",
+            "title": "Display Num",
+            "description": "Display number to target",
+            "default": 1,
+            "example": 1
+          },
+          "typing_delay": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Typing Delay",
+            "description": "Delay between keystrokes in milliseconds",
+            "default": 12,
+            "example": 12
+          },
+          "typing_group_size": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "title": "Typing Group Size",
+            "description": "Number of characters to type at once",
+            "default": 50,
+            "example": 50
+          }
+        },
+        "type": "object",
+        "required": ["text"],
+        "title": "TypeTextRequest",
+        "example": {
+          "display_num": 1,
+          "text": "Hello, World!",
+          "typing_delay": 12,
+          "typing_group_size": 50
+        }
+      },
+      "UndoEditParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "File path to undo changes",
+            "example": "/path/to/file.txt"
+          }
+        },
+        "type": "object",
+        "required": ["path"],
+        "title": "UndoEditParams",
+        "example": {
+          "path": "/path/to/file.txt"
+        }
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      },
+      "ViewParams": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "File path to view",
+            "example": "/path/to/file.txt"
+          },
+          "view_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "View Range",
+            "description": "Line range to view [start, end]",
+            "example": [1, 10]
+          }
+        },
+        "type": "object",
+        "required": ["path"],
+        "title": "ViewParams",
+        "example": {
+          "path": "/path/to/file.txt",
+          "view_range": [1, 10]
+        }
+      }
+    }
+  }
+}

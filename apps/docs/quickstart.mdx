@@ -1,86 +1,101 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'Get started with cuse in minutes'
 ---
 
-## Setup your development
+## Requirements
 
-Learn how to update your docs locally and and deploy them to the public.
+Before getting started, make sure you have the following installed:
 
-### Edit and preview
+### Docker
 
-<AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `mint.json` is): ``` mintlify dev ```
-  </Accordion>
-</AccordionGroup>
+Docker is required for all cuse setups. Make sure you have Docker installed and running on your machine.
 
-### Deploy your changes
+You can download Docker from the [official Docker website](https://www.docker.com/get-started/).
 
-<AccordionGroup>
+### Anthropic API Key
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
-</Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
-</Accordion>
+If you're following the Quick Start Example, you'll need an Anthropic API key.
 
-</AccordionGroup>
+1. Sign up at [Anthropic](https://www.anthropic.com/)
+2. Create an API key from your dashboard
+3. Save it to your environment:
 
-## Update your docs
+```bash
+# In your terminal
+export ANTHROPIC_API_KEY=your-api-key
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+# Or create a .env file in the example directory
+echo "ANTHROPIC_API_KEY=your-api-key" > .env
+```
+
+## Quick Start Example
+
+Learn how to get started with our example repository.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/cuse-dev/cuse-quickstart
+cd cuse-quickstart
+```
+
+### 2. Start the computer
+
+```bash
+npx @cusedev/cli start
+```
+
+### 3. Run the example
+
+```bash
+npm install
+npm run dev
+```
+
+## Add to Existing Project
+
+Learn how to integrate cuse into your existing project.
+
+### 1. Install and initialize
+
+```bash
+npm install @cusedev/core
+npx @cusedev/cli init
+npx @cusedev/cli new
+```
+
+### 2. Start the computer
+
+```bash
+npx @cusedev/cli start
+```
+
+### 3. Implement cuse
+
+Create the computer instance:
+
+```typescript
+const computer = new Computer({
+  config: {
+    baseUrl: 'http://localhost:4242/your-computer-name',
+  },
+});
+```
+
+Interact with the computer:
+
+```typescript
+const base64 = await computer.system.display.getScreenshot();
+```
+
+## Next Steps
 
 <CardGroup>
-
-<Card title="Style Your Docs" icon="paintbrush" href="/settings/global">
-  Add flair to your docs with personalized branding.
-</Card>
-
-<Card
-  title="Add API Endpoints"
-  icon="square-code"
-  href="/api-playground/configuration"
->
-  Implement your OpenAPI spec and enable API user interaction.
-</Card>
-
-<Card
-  title="Integrate Analytics"
-  icon="chart-mixed"
-  href="/analytics/supported-integrations"
->
-  Draw insights from user interactions with your documentation.
-</Card>
-
-<Card
-  title="Host on a Custom Domain"
-  icon="browser"
-  href="/settings/custom-domain/subdomain"
->
-  Keep your docs on your own website's subdomain.
-</Card>
-
+  <Card title="CLI Reference" icon="square-terminal" href="/cli/init">
+    Learn how to use the cuse CLI to manage your computers
+  </Card>
+  <Card title="API Reference" icon="laptop" href="/api-reference">
+    Learn how to use the REST API to interact with your computers
+  </Card>
 </CardGroup>

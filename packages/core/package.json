@@ -1,0 +1,47 @@
+{
+  "name": "@cusedev/core",
+  "description": "Core library for implementing computer usage capabilities for AI agents",
+  "keywords": ["cuse", "ai", "agents", "computer-use"],
+  "version": "0.1.23",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuse-dev/cuse.git"
+  },
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc --noEmit",
+    "generate-client": "npx @hey-api/openapi-ts -c @hey-api/client-fetch -i src/openapi.json -o src/system/client",
+    "dev": "pnpm build --watch"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^1.0.5",
+    "@hey-api/client-fetch": "^0.6.0",
+    "@hey-api/openapi-ts": "^0.61.3",
+    "ai": "^4.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

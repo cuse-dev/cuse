@@ -1,0 +1,26 @@
+---
+title: 'list'
+description: 'List all computers in project'
+---
+
+## Usage
+
+```bash
+npx @cusedev/cli list
+```
+
+## Description
+
+The `list` command shows all computers defined in your project configuration, including both running and stopped computers.
+
+## Output
+
+A table showing for each computer:
+
+- Identifier
+- Operating System
+- Template
+- Status (running/stopped)
+- Container ID (if running)
+- API URL (if running)
+- noVNC URL (if running)

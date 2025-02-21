@@ -1,0 +1,30 @@
+---
+title: 'rm'
+description: 'Remove a specific computer'
+---
+
+## Usage
+
+```bash
+npx @cusedev/cli rm <identifier> [options]
+```
+
+## Description
+
+The `rm` command removes a specific computer from your project, stopping and cleaning up its container if it's running.
+
+## Options
+
+| Option    | Alias | Description              |
+| --------- | ----- | ------------------------ |
+| `--force` | `-f`  | Skip confirmation prompt |
+
+## Example
+
+```bash
+# Remove with confirmation prompt
+npx @cusedev/cli rm my-computer
+
+# Force remove without confirmation
+npx @cusedev/cli rm my-computer --force
+```

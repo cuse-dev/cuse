@@ -1,0 +1,51 @@
+---
+title: 'init'
+description: 'Initialize cuse in an existing project'
+---
+
+## Usage
+
+```bash
+npx @cusedev/cli init [options]
+```
+
+## Description
+
+The `init` command initializes cuse in your current project directory. It creates a configuration file (`cuse.config.yml`) and sets up the necessary proxy server for managing virtual computers.
+
+## Options
+
+| Option    | Alias | Description                                                          |
+| --------- | ----- | -------------------------------------------------------------------- |
+| `--force` | `-f`  | Force the initialization process, overwriting existing configuration |
+| `--yes`   | `-y`  | Skip confirmation prompts                                            |
+
+## Interactive Configuration
+
+The command will prompt you for:
+
+1. Project name (defaults to current directory name)
+2. Project description (optional)
+
+## Example
+
+```bash
+# Basic initialization
+npx @cusedev/cli init
+
+# Force initialization, overwriting existing config
+npx @cusedev/cli init --force
+
+# Initialize without prompts
+npx @cusedev/cli init --yes
+```
+
+## Output
+
+After successful initialization, you'll see:
+
+- Confirmation of configuration file creation
+- URLs for accessing your computers:
+  - API endpoint: `http://localhost:4242/<computer-name>`
+  - noVNC interface: `http://localhost:4242/<computer-name>/novnc/`
+  - VNC endpoint: `http://localhost:4242/<computer-name>/vnc/`

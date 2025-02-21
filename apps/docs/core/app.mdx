@@ -1,0 +1,156 @@
+---
+title: 'App'
+description: 'Create custom applications for your virtual computer'
+---
+
+## Overview
+
+Apps in cuse are modular components that can be installed and run on a virtual computer. Each app is an instance of a class that extends the abstract `App` class and implements its core lifecycle methods.
+
+## Creating an App
+
+To create a custom app, extend the `App` class and implement the required methods:
+
+```typescript
+import { App, AppConfig } from '@cusedev/core';
+
+class CustomApp extends App {
+  constructor() {
+    super({
+      name: 'custom-app',
+      platform: 'linux',
+      autoStart: true,
+    });
+  }
+
+  async install(): Promise<void> {
+    // Install dependencies or set up the app
+    await this.computer.system.bash.execute({
+      command: 'apt-get install -y your-dependency',
+    });
+  }
+
+  async start(): Promise<void> {
+    // Start your application
+    await this.computer.system.bash.execute({
+      command: 'start-your-app',
+    });
+  }
+
+  async stop(): Promise<void> {
+    // Clean up and stop your application
+    await this.computer.system.bash.execute({
+      command: 'stop-your-app',
+    });
+  }
+}
+```
+
+### Configuration
+
+When creating an app, you must provide an `AppConfig`:
+
+| Property    | Type    | Description                                                    |
+| ----------- | ------- | -------------------------------------------------------------- |
+| `name`      | string  | Unique name for your app                                       |
+| `platform`  | string  | Target platform (e.g., 'linux', 'windows')                     |
+| `autoStart` | boolean | Whether to start the app automatically when the computer boots |
+
+### Lifecycle Methods
+
+Each app must implement three core lifecycle methods:
+
+- **install()**: Called when the app is first initialized. Use this to install dependencies or set up the app environment.
+- **start()**: Called when the app should start running, either automatically if `autoStart` is true or manually.
+- **stop()**: Called when the app should shut down, typically when the computer is shutting down.
+
+## Using Apps with a Computer
+
+To use your apps with a Computer instance, first define an interface for your app collection:
+
+```typescript
+interface MyApps {
+  custom: CustomApp;
+  other: OtherApp;
+}
+
+const computer = new Computer<MyApps>({
+  apps: {
+    custom: new CustomApp(),
+    other: new OtherApp(),
+  },
+  config: {
+    baseUrl: 'http://localhost:4242/my-computer',
+  },
+});
+```
+
+### Accessing the Computer
+
+Inside your app, you can access the computer instance through `this.computer`:
+
+```typescript
+class CustomApp extends App {
+  async doSomething() {
+    // Take a screenshot
+    const screenshot = await this.computer.system.display.getScreenshot();
+
+    // Execute a command
+    await this.computer.system.bash.execute({
+      command: 'echo "Hello from CustomApp"',
+    });
+  }
+}
+```
+
+## Example: Browser App
+
+Here's a complete example of a browser app that installs and controls a web browser:
+
+```typescript
+import { App } from '@cusedev/core';
+
+class BrowserApp extends App {
+  constructor() {
+    super({
+      name: 'browser',
+      platform: 'linux',
+      autoStart: true,
+    });
+  }
+
+  async install(): Promise<void> {
+    // Install Chrome browser
+    await this.computer.system.bash.execute({
+      command: 'apt-get install -y chromium-browser',
+    });
+  }
+
+  async start(): Promise<void> {
+    // Start Chrome in the background
+    await this.computer.system.bash.execute({
+      command: 'chromium-browser --no-sandbox &',
+    });
+  }
+
+  async stop(): Promise<void> {
+    // Kill Chrome processes
+    await this.computer.system.bash.execute({
+      command: 'pkill chromium',
+    });
+  }
+
+  // Custom methods for browser control
+  async navigate(url: string): Promise<void> {
+    // Implementation for navigating to a URL
+  }
+}
+```
+
+## Best Practices
+
+1. **Error Handling**: Implement proper error handling in all lifecycle methods
+2. **Cleanup**: Ensure the `stop()` method properly cleans up all resources
+3. **Idempotency**: Make the `install()` method idempotent - it should be safe to call multiple times
+4. **Documentation**: Document any custom methods and requirements for your app
+5. **Dependencies**: Clearly specify any system dependencies your app requires
