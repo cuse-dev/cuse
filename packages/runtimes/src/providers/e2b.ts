@@ -68,6 +68,10 @@ export function createE2BRuntimeConfig(
     timeoutMs: process.env.DEFAULT_RUNTIME_TIMEOUT_MS
       ? parseInt(process.env.DEFAULT_RUNTIME_TIMEOUT_MS, 10)
       : DEFAULT_RUNTIME_CONFIG.timeoutMs!,
+    sandboxCreateOptions: {
+      ...DEFAULT_RUNTIME_CONFIG.sandboxCreateOptions,
+      ...partialConfig?.sandboxCreateOptions,
+    },
   };
 
   // Merge configs in order of precedence:
@@ -85,7 +89,7 @@ export function createE2BRuntimeConfig(
   // Validate the config using zod schema
   const validatedConfig = E2BRuntimeConfigSchema.parse(mergedConfig);
 
-  return validatedConfig;
+  return validatedConfig as E2BRuntimeConfig;
 }
 
 export class E2BRuntime extends BaseRuntime {
