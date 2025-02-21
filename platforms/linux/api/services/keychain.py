@@ -63,17 +63,13 @@ class KeychainService:
         """List all services in the password store."""
         output = self._run_pass_command(['ls'])
         
-        # Parse the output to get service names, handling both ├── and └── prefixes
-        services = []
-        for line in output.split('\n'):
-            line = line.strip()
-            if '└──' in line or '├──' in line:
-                # Remove the tree symbols and any leading/trailing whitespace
-                service = line.replace('└── ', '').replace('├── ', '').strip()
-                if service:  # Only add non-empty service names
-                    services.append(service)
-                    
-        return services
+        # Parse the output to get service names
+        services = [
+            line.replace('└── ', '').strip()
+            for line in output.split('\n')
+            if '└──' in line
+        ]
+        return [s for s in services if s]
 
     async def authenticate(self, service: str, auth_elements: List[AuthElement]) -> bool:
         """Verify credentials exist for a service."""

@@ -140,3 +140,4 @@ apps/cuse-quickstart/
 
 # Python
 venv/
+__pycache__/
