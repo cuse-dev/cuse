@@ -67,8 +67,6 @@ COPY bun.lockb ./
 RUN --mount=type=cache,target=/root/.bun \
     for i in {1..3}; do bun install && break || sleep 5; done
 
-# Copy the rest of the application
-COPY platforms/browser .
 
 # Install Playwright with all browsers and dependencies
 RUN for i in {1..3}; do \
@@ -81,6 +79,10 @@ RUN for i in {1..3}; do \
     done
 
 RUN bunx playwright install 
+
+# Copy the rest of the application
+COPY platforms/browser .
+
     
 # Build the application
 RUN bun run build
@@ -139,18 +141,24 @@ COPY --from=builder /root/.cache/ms-playwright /root/.cache/ms-playwright
 WORKDIR /app
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 8000
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV DISPLAY_NUM=1
-ENV HEIGHT=768
-ENV WIDTH=1024
-ENV DISPLAY=:${DISPLAY_NUM}
+ENV DISPLAY=:99
+ENV SCREEN_WIDTH=1024
+ENV SCREEN_HEIGHT=768
+ENV SCREEN_DEPTH=24
 
 # Create a script to start Xvfb and the application
-RUN echo '#!/bin/sh\nXvfb :${DISPLAY_NUM} -screen 0 ${WIDTH}x${HEIGHT}x24 &\nsleep 1\nexec bun run start' > /app/start.sh && \
-    chmod +x /app/start.sh
+RUN echo '#!/bin/sh\n\
+Xvfb $DISPLAY -screen 0 ${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_DEPTH} &\n\
+XVFB_PID=$!\n\
+sleep 2\n\
+echo "Starting application..."\n\
+bun run start\n\
+kill $XVFB_PID\n\
+' > /app/start.sh && chmod +x /app/start.sh
 
 # Start the application
 CMD ["/app/start.sh"] 

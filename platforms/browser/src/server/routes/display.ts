@@ -15,6 +15,59 @@ export function displayRoutes(browserController: BrowserController) {
   return new Elysia().group('/display', (app) =>
     app
       .get(
+        '/stream',
+        async ({ query }) => {
+          const html = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Live Display Stream</title>
+                <style>
+                  body { margin: 0; padding: 0; overflow: hidden; }
+                  img { width: 100%; height: 100vh; object-fit: contain; }
+                </style>
+              </head>
+              <body>
+                <img src="/api/display/screenshot${query.display_num ? `?display_num=${query.display_num}` : ''}" id="stream">
+                <script>
+                  setInterval(() => {
+                    const img = document.getElementById('stream');
+                    img.src = '/api/display/screenshot${query.display_num ? `?display_num=${query.display_num}` : ''}?' + new Date().getTime();
+                  }, 2000);
+                </script>
+              </body>
+            </html>
+          `;
+
+          return new Response(html, {
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          });
+        },
+        {
+          query: DisplayRequest,
+          detail: {
+            tags: ['display'],
+            summary: 'Stream Display',
+            description:
+              'Returns an HTML page that shows a live stream of the display, refreshing every 2 seconds.',
+            responses: {
+              '200': {
+                description: 'HTML page with auto-refreshing display stream',
+                content: {
+                  'text/html': {
+                    schema: { type: 'string' },
+                  },
+                },
+              },
+              '500': { description: 'Internal server error' },
+            },
+          },
+        }
+      )
+
+      .get(
         '/screenshot',
         async ({ query }) => {
           return await browserController.display.takeScreenshot(query);

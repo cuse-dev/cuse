@@ -51,7 +51,12 @@ export class BrowserController {
 
     try {
       this.browser = await chromium.launch({
-        headless: false, // For development, set to true for production
+        headless: process.env.NODE_ENV === 'production',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+        ],
       });
 
       // Ensure browser is properly initialized before continuing

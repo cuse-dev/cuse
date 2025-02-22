@@ -38,13 +38,16 @@ const app = new Elysia()
       },
     })
   )
-  .use(mouseRoutes(browserController))
-  .use(keyboardRoutes(browserController))
-  .use(displayRoutes(browserController))
-  .use(navigationRoutes(browserController))
-  .use(bashRoutes(browserController))
-  .use(filesystemRoutes(browserController))
-  .use(keychainRoutes(browserController))
+  .group('/api', (app) =>
+    app
+      .use(mouseRoutes(browserController))
+      .use(keyboardRoutes(browserController))
+      .use(displayRoutes(browserController))
+      .use(navigationRoutes(browserController))
+      .use(bashRoutes(browserController))
+      .use(filesystemRoutes(browserController))
+      .use(keychainRoutes(browserController))
+  )
   .onError(({ code, error }) => {
     console.error(`Error ${code}:`, error);
     return {
@@ -52,6 +55,6 @@ const app = new Elysia()
       error: error,
     };
   })
-  .listen(3000);
+  .listen(8000);
 
 console.log(`Browser platform running at ${app.server?.url}`);
