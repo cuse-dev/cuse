@@ -1,6 +1,14 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Labels
+LABEL name="@cuse-dev/cuse/linux"
+LABEL version="0.1.0"
+LABEL description="Ubuntu computer with Python and noVNC"
+
+# Set the working directory
+WORKDIR /home/user
+
 # Install essential packages for the desktop environment and API runtime
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     git \
@@ -43,18 +51,18 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 RUN python3 -m pip freeze > requirements.txt
 
 # Create Xauthority file
-RUN touch /root/.Xauthority
+RUN touch .Xauthority
 
 # Copy the startup script into the image and make it executable
-COPY keychain.sh /keychain.sh
-RUN chmod +x /keychain.sh
+COPY keychain.sh .
+RUN chmod +x ./keychain.sh
 
 # Copy the startup script into the image and make it executable
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+COPY start.sh .
+RUN chmod +x ./start.sh
 
 # Expose ports for noVNC (6080) and the FastAPI (8000)
 EXPOSE 6080 8000
 
 # Run the startup script when the container launches
-CMD ["/start.sh"]
+CMD ["./start.sh"]

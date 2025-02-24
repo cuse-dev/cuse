@@ -1,0 +1,16 @@
+# This is a config for E2B sandbox template.
+# You can use 'template_id' (h57jm243z5704y8ftnvk) from this config to spawn a sandbox:
+
+# Python SDK
+# from e2b import Sandbox
+# sandbox = Sandbox(template='h57jm243z5704y8ftnvk')
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create({ template: 'h57jm243z5704y8ftnvk' })
+
+memory_mb = 8_192
+cpu_count = 8
+start_cmd = "./start.sh"
+dockerfile = "Dockerfile"
+template_id = "h57jm243z5704y8ftnvk"

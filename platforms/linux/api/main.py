@@ -108,3 +108,7 @@ async def root(request: Request):
 async def api_root(request: Request):
     root_path = request.scope.get("root_path", "")
     return RedirectResponse(url=f"{root_path}/docs")
+
+@app.get("/ping")
+async def ping():
+    return {"message": "pong"}
