@@ -18,7 +18,7 @@ const Benefits = () => {
             <div>
               <h3 className="font-medium md:mb-2 md:text-xl">
                 Quick setup
-                <span className="-left-px absolute hidden h-6 w-px bg-primary md:inline-block"></span>
+                <span className="-left-px absolute hidden h-6 w-px bg-primary md:inline-block" />
               </h3>
               <p className="text-muted-foreground text-sm md:text-base">
                 Use the CLI to quickly set up your project and start
@@ -33,7 +33,7 @@ const Benefits = () => {
             <div>
               <h3 className="font-medium md:mb-2 md:text-xl">
                 Open source
-                <span className="-left-px absolute hidden h-6 w-px bg-primary md:inline-block"></span>
+                <span className="-left-px absolute hidden h-6 w-px bg-primary md:inline-block" />
               </h3>
               <p className="text-muted-foreground text-sm md:text-base">
                 cuse is open source and available for everyone to use and
@@ -48,7 +48,7 @@ const Benefits = () => {
             <div>
               <h3 className="font-medium md:mb-2 md:text-xl">
                 Reliability
-                <span className="-left-px absolute hidden h-6 w-px bg-primary md:inline-block"></span>
+                <span className="-left-px absolute hidden h-6 w-px bg-primary md:inline-block" />
               </h3>
               <p className="text-muted-foreground text-sm md:text-base">
                 Focus on implementing your application and let us handle the

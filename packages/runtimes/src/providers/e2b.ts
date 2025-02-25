@@ -1,10 +1,6 @@
-import { EventEmitter } from 'node:events';
 import { Sandbox, type SandboxOpts } from '@e2b/code-interpreter';
-import {
-  adjectives,
-  names,
-  uniqueNamesGenerator,
-} from 'unique-names-generator';
+import { EventEmitter } from 'node:events';
+import { animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { PlatformNotFoundError } from '../platform';
@@ -54,7 +50,9 @@ export function createE2BRuntimeConfig(
   const name =
     partialConfig?.name ??
     uniqueNamesGenerator({
-      dictionaries: [adjectives, names],
+      dictionaries: [colors, animals],
+      separator: '-',
+      style: 'lowerCase',
     });
 
   // Get environment variables if they exist
@@ -196,11 +194,7 @@ export class E2BRuntime extends BaseRuntime {
           await this.sandbox.commands.run(`export ${key}=${value}`);
         }
       }
-
-      console.log('sandbox', this.sandbox);
       if (this.config.metadata?.command) {
-        console.log('running command', this.config.metadata.command);
-
         const out = await this.sandbox.commands.run(
           this.config.metadata.command
         );
@@ -218,23 +212,17 @@ export class E2BRuntime extends BaseRuntime {
 
       this.logger.info('Starting virtual display...');
 
-      console.log('starting all');
-
       await this.sandbox.commands.run('./start_all.sh', {
         onStderr: (data) => {
-          console.log('stderr', data);
           this.logger.error(data);
           //throw new Error(data);
         },
         onStdout: (data) => {
-          console.log('stdout', data);
           this.logger.info(`stdout: ${data}`);
         },
         timeoutMs: 300000,
         background: true,
       });
-
-      console.log('started all');
 
       this.logger.info('Starting computer api...');
       await this.sandbox.commands.run('./entrypoint.sh', {
@@ -265,9 +253,6 @@ export class E2BRuntime extends BaseRuntime {
       // // Start metrics collection
       this.startMetricsCollection();
     } catch (error) {
-      console.log('error');
-      console.log(error);
-
       this.updateStatus(RuntimeStatus.ERROR);
       throw new RuntimeError(
         `Failed to start E2B sandbox: ${(error as Error).message}`,
@@ -277,7 +262,9 @@ export class E2BRuntime extends BaseRuntime {
   }
 
   async stop(): Promise<void> {
-    if (!this.sandbox) return;
+    if (!this.sandbox) {
+      return;
+    }
 
     try {
       await this.sandbox.kill();
@@ -366,12 +353,14 @@ export class E2BRuntime extends BaseRuntime {
   }
 
   private async startMetricsCollection(): Promise<void> {
-    if (!this.sandbox) return;
+    if (!this.sandbox) {
+      return;
+    }
 
     const updateInterval = this.connectionOptions?.metricsInterval ?? 15000;
 
     // biome-ignore lint/style/useConst: <explanation>
-    let interval: NodeJS.Timer;
+    let interval: NodeJS.Timeout;
 
     const collectMetrics = async () => {
       try {
@@ -393,7 +382,7 @@ export class E2BRuntime extends BaseRuntime {
           networkOutBytes: metricsNetwork,
           diskUsageBytes: metricsDisk,
         });
-      } catch (error) {
+      } catch (_error) {
         // Reset metrics on error
         this.updateMetrics({
           cpuUsagePercent: 0,
@@ -483,12 +472,12 @@ export class E2BRuntimeProvider extends BaseRuntimeProvider<
     return Array.from(this.instances.values());
   }
 
-  async indexInstances(): Promise<Map<string, E2BRuntime>> {
+  async indexInstances(): Promise<Record<string, E2BRuntime>> {
     // E2B doesn't provide a way to list existing sandboxes
     // So we just return the current instances
     const instances = await Sandbox.list();
-    const instancesMap = new Map<string, E2BRuntime>();
-    instances.forEach((instance) => {
+    const instancesMap: Record<string, E2BRuntime> = {};
+    for (const instance of instances) {
       const platform = this.getPlatforms().find(
         (p) => p.image === instance.templateId
       );
@@ -498,14 +487,10 @@ export class E2BRuntimeProvider extends BaseRuntimeProvider<
           name: instance.name ?? instance.sandboxId,
         });
         this.instances.set(runtime.id, runtime);
-        instancesMap.set(runtime.id, runtime);
+        instancesMap[runtime.id] = runtime;
       } else {
-        console.log(
-          'e2b platform not found by templateId',
-          instance.templateId
-        );
       }
-    });
+    }
     return instancesMap;
   }
 }

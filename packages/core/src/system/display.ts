@@ -6,7 +6,11 @@ import type { DisplayInterface, SystemConfig } from './types';
  * Provides functionality for screen operations like taking screenshots
  */
 export class Display implements DisplayInterface {
-  constructor(private config: SystemConfig) {}
+  private config: SystemConfig;
+
+  constructor(config: SystemConfig) {
+    this.config = config;
+  }
 
   /**
    * Capture a screenshot of the current display state

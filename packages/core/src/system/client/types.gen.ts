@@ -15,7 +15,7 @@ export type AuthenticateParams = {
   /**
    * Authentication elements to verify
    */
-  authElements: Array<AuthElement>;
+  authElements: AuthElement[];
 };
 
 export type CommandParams = {
@@ -100,7 +100,7 @@ export type HotkeyRequest = {
   /**
    * List of keys to press simultaneously
    */
-  keys: Array<string>;
+  keys: string[];
   /**
    * Display number to target
    */
@@ -108,7 +108,7 @@ export type HotkeyRequest = {
 };
 
 export type HTTPValidationError = {
-  detail?: Array<ValidationError>;
+  detail?: ValidationError[];
 };
 
 export type ImageLocateRequest = {
@@ -344,14 +344,14 @@ export type ViewParams = {
   /**
    * Line range to view [start, end]
    */
-  view_range?: Array<number> | null;
+  view_range?: number[] | null;
 };
 
 export type MoveMouseData = {
   body: MouseMoveRequest;
 };
 
-export type MoveMouseResponse = void;
+export type MoveMouseResponse = undefined;
 
 export type MoveMouseError = HTTPValidationError | unknown;
 
@@ -359,7 +359,7 @@ export type LeftClickData = {
   body: DisplayRequest;
 };
 
-export type LeftClickResponse = void;
+export type LeftClickResponse = undefined;
 
 export type LeftClickError = HTTPValidationError | unknown;
 
@@ -367,7 +367,7 @@ export type RightClickData = {
   body: DisplayRequest;
 };
 
-export type RightClickResponse = void;
+export type RightClickResponse = undefined;
 
 export type RightClickError = HTTPValidationError | unknown;
 
@@ -375,7 +375,7 @@ export type MiddleClickData = {
   body: DisplayRequest;
 };
 
-export type MiddleClickResponse = void;
+export type MiddleClickResponse = undefined;
 
 export type MiddleClickError = HTTPValidationError | unknown;
 
@@ -383,7 +383,7 @@ export type DoubleClickData = {
   body: DisplayRequest;
 };
 
-export type DoubleClickResponse = void;
+export type DoubleClickResponse = undefined;
 
 export type DoubleClickError = HTTPValidationError | unknown;
 
@@ -391,7 +391,7 @@ export type DragMouseData = {
   body: MouseMoveRequest;
 };
 
-export type DragMouseResponse = void;
+export type DragMouseResponse = undefined;
 
 export type DragMouseError = HTTPValidationError | unknown;
 
@@ -411,7 +411,7 @@ export type ScrollMouseData = {
   body: ScrollRequest;
 };
 
-export type ScrollMouseResponse = void;
+export type ScrollMouseResponse = undefined;
 
 export type ScrollMouseError = HTTPValidationError | unknown;
 
@@ -519,7 +519,7 @@ export type TerminateProcessData = {
   };
 };
 
-export type TerminateProcessResponse = void;
+export type TerminateProcessResponse = undefined;
 
 export type TerminateProcessError = unknown | HTTPValidationError;
 
@@ -527,11 +527,11 @@ export type RestartSystemData = {
   body: RestartParams;
 };
 
-export type RestartSystemResponse = void;
+export type RestartSystemResponse = undefined;
 
 export type RestartSystemError = HTTPValidationError | unknown;
 
-export type ListManagedProcessesResponse = Array<ProcessInfo>;
+export type ListManagedProcessesResponse = ProcessInfo[];
 
 export type ListManagedProcessesError = unknown;
 
@@ -547,7 +547,7 @@ export type CreateFileData = {
   body: CreateParams;
 };
 
-export type CreateFileResponse = void;
+export type CreateFileResponse = undefined;
 
 export type CreateFileError = unknown | HTTPValidationError;
 
@@ -555,7 +555,7 @@ export type ReplaceStringData = {
   body: StrReplaceParams;
 };
 
-export type ReplaceStringResponse = void;
+export type ReplaceStringResponse = undefined;
 
 export type ReplaceStringError = unknown | HTTPValidationError;
 
@@ -563,7 +563,7 @@ export type InsertTextData = {
   body: InsertParams;
 };
 
-export type InsertTextResponse = void;
+export type InsertTextResponse = undefined;
 
 export type InsertTextError = unknown | HTTPValidationError;
 
@@ -571,7 +571,7 @@ export type UndoEditData = {
   body: UndoEditParams;
 };
 
-export type UndoEditResponse = void;
+export type UndoEditResponse = undefined;
 
 export type UndoEditError = unknown | HTTPValidationError;
 
@@ -579,7 +579,7 @@ export type SetKeychainItemData = {
   body: SetItemParams;
 };
 
-export type SetKeychainItemResponse = void;
+export type SetKeychainItemResponse = undefined;
 
 export type SetKeychainItemError = HTTPValidationError | unknown;
 
@@ -587,11 +587,11 @@ export type DeleteKeychainItemData = {
   body: DeleteItemParams;
 };
 
-export type DeleteKeychainItemResponse = void;
+export type DeleteKeychainItemResponse = undefined;
 
 export type DeleteKeychainItemError = HTTPValidationError | unknown;
 
-export type ListKeychainServicesResponse = Array<string>;
+export type ListKeychainServicesResponse = string[];
 
 export type ListKeychainServicesError = unknown;
 
@@ -607,7 +607,7 @@ export type ListDirectoryData = {
   body: ListDirectoryParams;
 };
 
-export type ListDirectoryResponse = Array<FileInfo>;
+export type ListDirectoryResponse = FileInfo[];
 
 export type ListDirectoryError = unknown | HTTPValidationError;
 
@@ -625,7 +625,7 @@ export type SearchFilesData = {
   body: SearchParams;
 };
 
-export type SearchFilesResponse = Array<FileInfo>;
+export type SearchFilesResponse = FileInfo[];
 
 export type SearchFilesError = unknown | HTTPValidationError;
 

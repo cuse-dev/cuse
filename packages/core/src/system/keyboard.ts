@@ -12,7 +12,11 @@ import type {
  * Provides functionality for keyboard input operations
  */
 export class Keyboard implements KeyboardInterface {
-  constructor(private config: SystemConfig) {}
+  private config: SystemConfig;
+
+  constructor(config: SystemConfig) {
+    this.config = config;
+  }
 
   /**
    * Simulate pressing a single key on the keyboard

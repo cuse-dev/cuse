@@ -22,7 +22,9 @@ const DEFAULT_TIMEOUT = 300000;
 
 describe('E2BRuntimeProvider', () => {
   if (!process.env.E2B_API_KEY) {
-    throw new Error('E2B_API_KEY must be set to run tests');
+    // skip tests if E2B_API_KEY is not set
+    test.skip('E2B_API_KEY must be set to run tests');
+    return;
   }
 
   beforeEach(() => {

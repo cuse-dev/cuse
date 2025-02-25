@@ -7,8 +7,8 @@ export interface AppConfig {
 }
 
 export abstract class App {
-  public config: AppConfig;
-  public computer!: Computer;
+  config: AppConfig;
+  computer!: Computer;
 
   constructor(config: AppConfig) {
     this.config = config;

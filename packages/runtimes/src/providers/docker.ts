@@ -1,9 +1,6 @@
+import { logger } from '@repo/logger';
 import Docker from 'dockerode';
-import {
-  adjectives,
-  names,
-  uniqueNamesGenerator,
-} from 'unique-names-generator';
+import { animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { PlatformNotFoundError } from '../platform';
@@ -34,7 +31,9 @@ function demultiplexDockerLog(buffer: Buffer): string {
 
   while (position < buffer.length) {
     // Ensure we have at least a header
-    if (position + 8 > buffer.length) break;
+    if (position + 8 > buffer.length) {
+      break;
+    }
 
     // Read header
     const streamType = buffer[position];
@@ -44,7 +43,9 @@ function demultiplexDockerLog(buffer: Buffer): string {
     position += 8;
 
     // Ensure we have the full message
-    if (position + size > buffer.length) break;
+    if (position + size > buffer.length) {
+      break;
+    }
 
     // Extract message
     const message = buffer.toString('utf8', position, position + size);
@@ -86,11 +87,11 @@ interface DockerStats {
 }
 
 interface DockerRuntimeConfig extends BaseRuntimeConfig {
-  network: string;
+  containerConfig: Docker.ContainerCreateOptions;
 }
 
 const DockerRuntimeConfigSchema = BaseRuntimeConfigSchema.extend({
-  network: z.string(),
+  containerConfig: z.object({}).passthrough(),
 });
 
 /**
@@ -100,7 +101,11 @@ const DEFAULT_RUNTIME_CONFIG: Partial<DockerRuntimeConfig> = {
   memoryMb: 4096,
   cpuCount: 4,
   timeoutMs: 300000, // 5 minutes
-  network: 'cuse-default',
+  containerConfig: {
+    HostConfig: {
+      NetworkMode: 'cuse-default',
+    },
+  },
 };
 
 /**
@@ -117,7 +122,9 @@ export function createDockerRuntimeConfig(
   const name =
     partialConfig?.name ??
     uniqueNamesGenerator({
-      dictionaries: [adjectives, names],
+      dictionaries: [colors, animals],
+      separator: '-',
+      style: 'lowerCase',
     });
 
   // Get environment variables if they exist
@@ -131,9 +138,10 @@ export function createDockerRuntimeConfig(
     timeoutMs: process.env.DEFAULT_RUNTIME_TIMEOUT_MS
       ? Number.parseInt(process.env.DEFAULT_RUNTIME_TIMEOUT_MS, 10)
       : DEFAULT_RUNTIME_CONFIG.timeoutMs!,
-    network: process.env.DEFAULT_RUNTIME_NETWORK
-      ? process.env.DEFAULT_RUNTIME_NETWORK
-      : DEFAULT_RUNTIME_CONFIG.network!,
+    containerConfig: {
+      ...DEFAULT_RUNTIME_CONFIG.containerConfig,
+      ...partialConfig?.containerConfig,
+    },
   };
 
   // Merge configs in order of precedence:
@@ -193,7 +201,7 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
 
     super(containerConfig, connectionOptions);
     this.platform = platform;
-    this.docker = new Docker(connectionOptions);
+    this.docker = new Docker({});
   }
 
   get capabilities(): RuntimeCapabilities {
@@ -235,9 +243,9 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
       }
 
       const containerConfig: Docker.ContainerCreateOptions = {
+        ...this.config.containerConfig,
         Image: this.platform.image,
         name: this.config.id,
-        ...(cmd && { Cmd: cmd }),
         Tty: false,
         AttachStdout: true,
         AttachStderr: true,
@@ -249,8 +257,9 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
             ? this.config.cpuCount * 1e9
             : undefined,
           AutoRemove: autoRemove,
-          NetworkMode: this.config.network,
+          ...this.config.containerConfig.HostConfig,
         },
+        ...(cmd && { Cmd: cmd }),
         Env: envVars,
       };
 
@@ -266,6 +275,7 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
       this.startMetricsCollection();
     } catch (error) {
       this.updateStatus(RuntimeStatus.ERROR);
+      logger.error('Error starting Docker container:', { error });
       throw new RuntimeError(
         `Failed to start Docker container: ${(error as Error).message}`,
         'DOCKER_START_ERROR'
@@ -274,7 +284,9 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
   }
 
   async stop(): Promise<void> {
-    if (!this.containerId) return;
+    if (!this.containerId) {
+      return;
+    }
 
     try {
       const container = this.docker.getContainer(this.containerId);
@@ -296,8 +308,18 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
     }
   }
 
+  async getUrl(): Promise<string> {
+    if (!this.containerId) {
+      throw new RuntimeError('Container not started', 'DOCKER_URL_ERROR');
+    }
+
+    return `${this.connectionOptions.protocol ?? 'http'}://${this.connectionOptions.host}:${this.connectionOptions.port}`;
+  }
+
   async exists(): Promise<boolean> {
-    if (!this.containerId) return false;
+    if (!this.containerId) {
+      return false;
+    }
 
     const containers = await this.docker.listContainers({
       all: true, // Include stopped containers in the check
@@ -382,18 +404,20 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
 
       const container = this.docker.getContainer(this.containerId);
 
+      let sinceTimestamp: number | undefined;
+      if (options?.since instanceof Date) {
+        sinceTimestamp = Math.floor(options.since.getTime() / 1000);
+      } else if (options?.since) {
+        sinceTimestamp = Math.floor(new Date(options.since).getTime() / 1000);
+      }
+
       const logs = await container.logs({
         stdout: true,
         stderr: true,
         follow: false,
         tail: options?.tail,
         timestamps: options?.timestamps,
-        since:
-          options?.since instanceof Date
-            ? Math.floor(options.since.getTime() / 1000)
-            : options?.since
-              ? Math.floor(new Date(options.since).getTime() / 1000)
-              : undefined,
+        since: sinceTimestamp,
       });
 
       // Demultiplex and clean up the logs
@@ -424,18 +448,20 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
 
     try {
       const container = this.docker.getContainer(this.containerId);
+      let sinceTimestamp: number | undefined;
+      if (options?.since instanceof Date) {
+        sinceTimestamp = Math.floor(options.since.getTime() / 1000);
+      } else if (options?.since) {
+        sinceTimestamp = Math.floor(new Date(options.since).getTime() / 1000);
+      }
+
       const stream = await container.logs({
         stdout: true,
         stderr: true,
         tail: options?.tail,
         timestamps: options?.timestamps,
         follow: true,
-        since:
-          options?.since instanceof Date
-            ? Math.floor(options.since.getTime() / 1000)
-            : options?.since
-              ? Math.floor(new Date(options.since).getTime() / 1000)
-              : undefined,
+        since: sinceTimestamp,
       });
 
       // Handle log stream with buffer management and proper demultiplexing
@@ -486,10 +512,14 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
         this.docker.pull(
           this.platform.image,
           (err: Error | null, stream: NodeJS.ReadableStream) => {
-            if (err) return reject(err);
+            if (err) {
+              return reject(err);
+            }
 
             this.docker.modem.followProgress(stream, (err: Error | null) => {
-              if (err) return reject(err);
+              if (err) {
+                return reject(err);
+              }
               resolve();
             });
           }
@@ -504,12 +534,14 @@ export class DockerRuntime extends BaseRuntime<DockerRuntimeConfig> {
   }
 
   private async startMetricsCollection(): Promise<void> {
-    if (!this.containerId) return;
+    if (!this.containerId) {
+      return;
+    }
 
-    const updateInterval = this.connectionOptions?.metricsInterval ?? 5000;
+    const updateInterval = this.connectionOptions?.metricsInterval ?? 15000;
     const container = this.docker.getContainer(this.containerId);
-    // biome-ignore lint/style/useConst: This is declared before the function to allow for cleanup
-    let interval: NodeJS.Timer;
+    // biome-ignore lint/style/useConst: <explanation>
+    let interval: NodeJS.Timeout;
 
     const collectMetrics = async () => {
       try {
@@ -629,8 +661,6 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
       const networks = await this.docker.listNetworks({
         filters: { name: [this.network] },
       });
-
-      console.log('networks', networks);
       if (networks.length === 0) {
         await this.docker.createNetwork({
           Name: this.network,
@@ -639,7 +669,6 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
         });
       }
     } catch (error) {
-      console.error(error);
       throw new RuntimeError(
         `Failed to ensure Docker network exists: ${(error as Error).message}`,
         'DOCKER_NETWORK_ERROR'
@@ -652,22 +681,60 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
   ): Promise<DockerRuntime> {
     await this.ensureNetworkExists();
 
+    // random port between 3010 and 4010
+    const port = Math.floor(Math.random() * (4010 - 3010)) + 3010;
+
     const platform = this.getPlatform(options.platformId);
     if (!platform) {
       throw new PlatformNotFoundError(options.platformId);
     }
 
-    const config: Partial<DockerRuntimeConfig> = {
-      network: this.network,
+    const connectionOptions: RuntimeConnectionOptions = {
+      host: 'localhost',
+      port,
+      protocol: 'http',
+    };
+
+    const runtimeConfig: Partial<DockerRuntimeConfig> = {
       ...options.config,
       metadata: {
         platformId: platform.id,
         platformVersion: platform.version,
+        port: connectionOptions.port!.toString(),
         ...options.config?.metadata,
+      },
+      containerConfig: {
+        ExposedPorts: {
+          '8000/tcp': {},
+        },
+        HostConfig: {
+          NetworkMode: this.network,
+          PortBindings: {
+            '8000/tcp': [
+              {
+                HostPort: connectionOptions.port!.toString(),
+                HostIp: '0.0.0.0', // Bind to all network interfaces
+              },
+            ],
+          },
+        },
+        ...((options.config?.name || options.config?.id) && {
+          NetworkingConfig: {
+            EndpointsConfig: {
+              [this.network]: {
+                Aliases: [`${options.config?.name || options.config?.id}`],
+              },
+            },
+          },
+        }),
       },
     };
 
-    const runtime = new DockerRuntime(platform, config);
+    const runtime = new DockerRuntime(
+      platform,
+      runtimeConfig,
+      connectionOptions
+    );
     this.instances.set(runtime.id, runtime);
     return runtime;
   }
@@ -690,7 +757,7 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
       },
     });
 
-    containers.forEach((container) => {
+    for (const container of containers) {
       const platform = Array.from(this.platforms.values()).find((p) =>
         p.image.includes(container.Image)
       );
@@ -700,7 +767,11 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
           new DockerRuntime(platform, {
             id: container.Id,
             name: container.Names[0]?.replace('/', '') || container.Id,
-            network: this.network,
+            containerConfig: {
+              HostConfig: {
+                NetworkMode: this.network,
+              },
+            },
             memoryMb: platform.defaultResources?.memoryMb || 2048,
             cpuCount: platform.defaultResources?.cpuCount || 2,
             timeoutMs: 300000,
@@ -712,7 +783,7 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
           })
         );
       }
-    });
+    }
 
     return Object.fromEntries(this.instances.entries());
   }
@@ -721,12 +792,12 @@ export class DockerRuntimeProvider extends BaseRuntimeProvider<
 /**
  * Create a Docker runtime provider with the specified platforms
  */
-export async function createDockerProvider(
+export function createDockerProvider(
   platforms: Platform[],
   defaultPlatformId: string,
   network = 'cuse-default',
   socketPath?: string
-): Promise<DockerRuntimeProvider> {
+): DockerRuntimeProvider {
   const provider = new DockerRuntimeProvider({
     platforms,
     defaultPlatform: defaultPlatformId,
@@ -735,8 +806,8 @@ export async function createDockerProvider(
   } as DockerRuntimeProviderConfig);
 
   // Ensure network exists before indexing instances
-  await provider.ensureNetworkExists();
-  await provider.indexInstances();
+  provider.ensureNetworkExists();
+  provider.indexInstances();
 
   return provider;
 }

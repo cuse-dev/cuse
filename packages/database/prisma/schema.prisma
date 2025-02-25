@@ -10,9 +10,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// This is a stub model.
-// Delete it and add your own Prisma models.
-model Page {
-  id   Int    @id @default(autoincrement())
-  name String
+enum ComputerPlatform {
+  MACOS
+  WINDOWS
+  LINUX
+  BROWSER
+}
+
+model ComputerInstance {
+  id        String           @id @default(uuid())
+  name      String
+  platform  ComputerPlatform
+  sandboxId String?
+  url       String?
+  metadata  Json
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  actions Action[]
+
+  @@unique([name])
+}
+
+model Action {
+  id         String           @id @default(uuid())
+  computerId String
+  data       Json
+  createdAt  DateTime         @default(now())
+  Computer   ComputerInstance @relation(fields: [computerId], references: [id])
+
+  @@index([computerId])
 }

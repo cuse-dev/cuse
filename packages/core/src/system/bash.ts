@@ -14,7 +14,11 @@ import type {
  * Provides functionality for executing shell commands and managing processes
  */
 export class Bash implements BashInterface {
-  constructor(private config: SystemConfig) {}
+  private config: SystemConfig;
+
+  constructor(config: SystemConfig) {
+    this.config = config;
+  }
 
   /**
    * Execute a shell command

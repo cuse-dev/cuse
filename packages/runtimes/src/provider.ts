@@ -22,11 +22,24 @@ export abstract class BaseRuntimeProvider<
 
   constructor(config: RuntimeProviderConfig) {
     this.platforms = new Map(config.platforms.map((p) => [p.id, p]));
-    const defaultPlatform = this.platforms.get(config.defaultPlatform);
+    const defaultPlatform = this.platforms.get(
+      config.defaultPlatform ?? this.platforms.values().next().value?.id
+    );
     if (!defaultPlatform) {
       throw new Error(`Default platform "${config.defaultPlatform}" not found`);
     }
     this.defaultPlatform = defaultPlatform;
+  }
+
+  async indexInstances(): Promise<Record<string, RuntimeType>> {
+    const instances = await this.listInstances();
+    return instances.reduce(
+      (acc, instance) => {
+        acc[instance.id] = instance;
+        return acc;
+      },
+      {} as Record<string, RuntimeType>
+    );
   }
 
   getPlatforms(): Platform[] {

@@ -1,8 +1,8 @@
 import { App } from '../App';
 import type { AuthElement, KeychainItem } from '../system/types';
-export type { AuthElement };
+
 export class Keychain extends App {
-  public services: string[] = [];
+  services: string[] = [];
 
   constructor() {
     super({

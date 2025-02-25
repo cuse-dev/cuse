@@ -1,0 +1,13 @@
+{
+  "name": "@repo/services",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@cusedev/runtimes": "workspace:*",
+    "@repo/database": "workspace:*",
+    "@repo/logger": "workspace:*",
+    "date-fns": "^4.1.0",
+    "zod": "^3.24.2",
+    "server-only": "^0.0.1"
+  }
+}

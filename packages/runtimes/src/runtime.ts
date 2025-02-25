@@ -95,6 +95,13 @@ export abstract class BaseRuntime<
   abstract getLogs(options?: RuntimeLogOptions): Promise<string>;
 
   /**
+   * Get connection URL
+   */
+  async getUrl(): Promise<string> {
+    return `${this.connectionOptions.protocol ?? 'http'}://${this.connectionOptions.host}:${this.connectionOptions.port}`;
+  }
+
+  /**
    * Follow container logs
    * Returns a function to stop following logs
    */

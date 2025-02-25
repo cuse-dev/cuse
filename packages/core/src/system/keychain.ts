@@ -12,7 +12,11 @@ import type {
  * Provides functionality for managing credentials and authentication
  */
 export class Keychain implements KeychainInterface {
-  constructor(private config: SystemConfig) {}
+  private config: SystemConfig;
+
+  constructor(config: SystemConfig) {
+    this.config = config;
+  }
 
   /**
    * Set a keychain item

@@ -4,13 +4,15 @@ import type { BaseRuntime } from './runtime';
 /**
  * Runtime status represents the current state of a runtime instance
  */
-export enum RuntimeStatus {
-  CREATING = 'creating',
-  RUNNING = 'running',
-  STOPPED = 'stopped',
-  ERROR = 'error',
-  TERMINATED = 'terminated',
-}
+export const RuntimeStatus = {
+  CREATING: 'creating',
+  RUNNING: 'running',
+  STOPPED: 'stopped',
+  ERROR: 'error',
+  TERMINATED: 'terminated',
+} as const;
+
+export type RuntimeStatus = (typeof RuntimeStatus)[keyof typeof RuntimeStatus];
 
 /**
  * Base configuration that all runtime providers must support
@@ -54,11 +56,14 @@ export interface RuntimeMetrics {
 /**
  * Runtime events that can be emitted by the runtime instance
  */
-export enum RuntimeEventType {
-  STATUS_CHANGED = 'status_changed',
-  METRICS_UPDATED = 'metrics_updated',
-  ERROR = 'error',
-}
+export const RuntimeEventType = {
+  STATUS_CHANGED: 'status_changed',
+  METRICS_UPDATED: 'metrics_updated',
+  ERROR: 'error',
+} as const;
+
+export type RuntimeEventType =
+  (typeof RuntimeEventType)[keyof typeof RuntimeEventType];
 
 export interface RuntimeEvent {
   type: RuntimeEventType;
@@ -70,12 +75,12 @@ export interface RuntimeEvent {
  * Base runtime error types
  */
 export class RuntimeError extends Error {
-  constructor(
-    message: string,
-    readonly code: string
-  ) {
+  readonly code: string;
+
+  constructor(message: string, code: string) {
     super(message);
     this.name = 'RuntimeError';
+    this.code = code;
   }
 }
 
@@ -189,6 +194,21 @@ export interface RuntimeProvider<
    * Create a new container for the specified platform
    */
   createInstance(options: RuntimeCreationOptions<C>): Promise<T>;
+
+  /**
+   * Get a specific runtime instance by ID
+   */
+  getInstance(id: string): Promise<T | undefined>;
+
+  /**
+   * List all runtime instances
+   */
+  listInstances(): Promise<T[]>;
+
+  /**
+   * Index currently running runtime instances
+   */
+  indexInstances(): Promise<Record<string, T>>;
 }
 
 /**

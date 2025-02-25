@@ -1,0 +1,29 @@
+{
+  "name": "@cusedev/browser",
+  "version": "0.0.1",
+  "description": "Browser platform implementation for cuse using Playwright",
+
+  "main": "dist/server/app.js",
+  "types": "dist/server/app.d.ts",
+  "scripts": {
+    "start": "tsx ./src/server/app.ts",
+    "dev": "tsx watch ./src/server/app.ts",
+    "build": "tsc --noCheck --outdir dist ./src/server/app.ts"
+  },
+  "dependencies": {
+    "@elysiajs/node": "^1.2.5",
+    "@elysiajs/swagger": "^1.2.1",
+    "@techstark/opencv-js": "^4.10.0-release.1",
+    "@types/glob": "^8.1.0",
+    "elysia": "latest",
+    "glob": "^11.0.1",
+    "playwright": "^1.50.1",
+    "sharp": "^0.33.5",
+    "tsx": "^4.19.3"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "typescript": "^5.7.3"
+  },
+  "module": "src/index.js"
+}

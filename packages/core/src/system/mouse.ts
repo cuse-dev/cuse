@@ -13,7 +13,11 @@ import type {
  * Provides functionality for cursor movement and mouse click operations
  */
 export class Mouse implements MouseInterface {
-  constructor(private config: SystemConfig) {}
+  private config: SystemConfig;
+
+  constructor(config: SystemConfig) {
+    this.config = config;
+  }
 
   /**
    * Get the current position of the mouse cursor

@@ -10,7 +10,8 @@
         ".next/**",
         "!.next/cache/**",
         ".basehub/**",
-        "**/generated/**"
+        "**/generated/**",
+        "dist/**"
       ]
     },
     "test": {

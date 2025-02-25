@@ -11,12 +11,12 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "files": ["dist", "README.md", "LICENSE", "CHANGElogger.md"],
   "scripts": {
     "build": "tsc",
     "check-types": "tsc --noEmit",
     "dev": "pnpm build --watch",
-    "test": "vitest"
+    "test": "vitest --run"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
@@ -33,6 +33,7 @@
     "unique-names-generator": "^4.7.1",
     "uuid": "^11.1.0",
     "vitest": "^3.0.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@repo/logger": "workspace:*"
   }
 }

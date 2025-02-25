@@ -22,7 +22,7 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "files": ["dist", "README.md", "LICENSE", "CHANGElogger.md"],
   "scripts": {
     "build": "tsc",
     "check-types": "tsc --noEmit",

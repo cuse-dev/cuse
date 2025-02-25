@@ -14,7 +14,11 @@ import type {
  * Provides functionality for file manipulation operations
  */
 export class Editor implements EditorInterface {
-  constructor(private config: SystemConfig) {}
+  private config: SystemConfig;
+
+  constructor(config: SystemConfig) {
+    this.config = config;
+  }
 
   /**
    * View contents of a file

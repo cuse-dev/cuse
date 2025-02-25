@@ -24,9 +24,7 @@ async function main() {
   try {
     await runCommand('bun run build');
     await runCommand('bun run check-types');
-    console.log('Build completed successfully!');
-  } catch (error) {
-    console.error('Build failed:', error);
+  } catch (_error) {
     process.exit(1);
   }
 }

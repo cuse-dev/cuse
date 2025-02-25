@@ -13,8 +13,7 @@ export const initTools = (computer: Computer) => {
           case 'screenshot': {
             const screenshot = await computer.system.display
               .getScreenshot()
-              .catch((error) => {
-                console.error(error);
+              .catch((_error) => {
                 return null;
               });
 
@@ -43,14 +42,15 @@ export const initTools = (computer: Computer) => {
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Pressed keys';
           }
-          case 'type':
+          case 'type': {
             if (!text) {
               return 'No text provided';
             }
             await computer.system.keyboard.type({ text });
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Typed text';
-          case 'mouse_move':
+          }
+          case 'mouse_move': {
             if (coordinate) {
               await computer.system.mouse.move({
                 x: coordinate[0],
@@ -60,27 +60,32 @@ export const initTools = (computer: Computer) => {
               return 'Moved mouse';
             }
             return 'Invalid coordinate';
-          case 'left_click':
+          }
+          case 'left_click': {
             await computer.system.mouse.leftClick();
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Left clicked';
-          case 'right_click':
+          }
+          case 'right_click': {
             await computer.system.mouse.rightClick();
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Right clicked';
-          case 'middle_click':
+          }
+          case 'middle_click': {
             await computer.system.mouse.middleClick();
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Middle clicked';
-          case 'double_click':
+          }
+          case 'double_click': {
             await computer.system.mouse.doubleClick();
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Double clicked';
+          }
           case 'cursor_position': {
             const position = await computer.system.mouse.getPosition();
             return `Cursor position: X=${position.x}, Y=${position.y}`;
           }
-          case 'left_click_drag':
+          case 'left_click_drag': {
             if (!coordinate) {
               return 'No coordinate provided';
             }
@@ -91,10 +96,10 @@ export const initTools = (computer: Computer) => {
             });
             await new Promise((resolve) => setTimeout(resolve, 300));
             return 'Left clicked and dragged';
-          default:
-            console.log('Invalid action', action);
-
+          }
+          default: {
             return 'Invalid action';
+          }
         }
       },
       experimental_toToolResultContent(result) {
@@ -111,15 +116,12 @@ export const initTools = (computer: Computer) => {
     }),
     bash: anthropic.tools.bash_20241022({
       execute: async ({ command, restart }) => {
-        console.log('Executing command:', command);
-
         if (restart) {
           await computer.system.bash.restart();
         }
         return await computer.system.bash
           .execute({ command })
           .catch((error) => {
-            console.error(error);
             return `Failed to execute command: ${error.message ? error.message.slice(0, 500) : 'Unknown error'}`;
           });
       },
@@ -140,13 +142,14 @@ export const initTools = (computer: Computer) => {
               path,
               viewRange: view_range as [number, number] | undefined,
             });
-          case 'create':
+          case 'create': {
             await computer.system.editor.createFile({
               path,
               content: file_text as string,
             });
             return 'Created file';
-          case 'insert':
+          }
+          case 'insert': {
             if (!file_text) {
               return 'No file text provided';
             }
@@ -156,7 +159,8 @@ export const initTools = (computer: Computer) => {
               line: insert_line as number,
             });
             return 'Inserted text';
-          case 'str_replace':
+          }
+          case 'str_replace': {
             if (!old_str || !new_str) {
               return 'No old or new string provided';
             }
@@ -166,9 +170,11 @@ export const initTools = (computer: Computer) => {
               newStr: new_str,
             });
             return 'Replaced text';
-          case 'undo_edit':
+          }
+          case 'undo_edit': {
             await computer.system.editor.undoLastEdit({ path });
             return 'Undid edit';
+          }
           default:
             return 'Invalid command';
         }
