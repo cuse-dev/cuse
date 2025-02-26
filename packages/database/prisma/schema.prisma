@@ -36,6 +36,7 @@ model Action {
   id         String           @id @default(uuid())
   computerId String
   data       Json
+  metadata   Json             @default("{}")
   createdAt  DateTime         @default(now())
   Computer   ComputerInstance @relation(fields: [computerId], references: [id])
 

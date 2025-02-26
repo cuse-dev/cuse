@@ -22,8 +22,9 @@
     "tsx": "^4.19.3"
   },
   "devDependencies": {
-    "bun-types": "latest",
     "typescript": "^5.7.3"
   },
-  "module": "src/index.js"
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }

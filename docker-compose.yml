@@ -10,4 +10,28 @@ services:
             POSTGRES_DB: postgres
         ports:
             - '5432:5432'
-        
+        networks:
+            - cuse-network
+            
+    app:
+        build:
+            context: .
+            dockerfile: apps/app/Dockerfile
+        ports:
+            - '3000:3000'
+        environment:
+            - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+            - DOCKER_SOCKET_PATH=/var/run/docker.sock
+            - BROWSER_IMAGE=cuse-local-browser:latest
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /usr/bin/docker:/usr/bin/docker
+        depends_on:
+            - db
+        networks:
+            - cuse-network
+        user: root
+
+networks:
+    cuse-network:
+        driver: bridge

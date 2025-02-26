@@ -1,25 +1,72 @@
-# next-forge
+# cuse
 
-**Production-grade Turborepo template for Next.js apps.**
+**Platform for creating and managing computer use agents.**
 
 <div>
-  <img src="https://img.shields.io/npm/dy/next-forge" alt="" />
-  <img src="https://img.shields.io/npm/v/next-forge" alt="" />
-  <img src="https://img.shields.io/github/license/haydenbleasel/next-forge" alt="" />
+  <img src="https://img.shields.io/github/license/cusedev/cuse" alt="" />
 </div>
 
-[next-forge](https://github.com/haydenbleasel/next-forge) is a [Next.js](https://nextjs.org/) project boilerplate for modern web application. It is designed to be a comprehensive starting point for new apps, providing a solid, opinionated foundation with a minimal amount of configuration.
+cuse is a platform for creating and managing computer use agents. Computer use agents are AI powered assistants that control a computer environment by running commands and interacting with mouse and keyboard controls. cuse is targeted at AI developers who want to build computer use agents or integrate computer use capabilities into their AI applications.
 
-Clone the repo using:
+## CLI
 
-```sh
-npx next-forge@latest init
+cuse comes with a powerful CLI tool for managing your projects. The CLI enables you to:
+
+- Initialize a new cuse project
+- Start and stop the cuse stack
+- Monitor the status of your containers
+- Use custom Docker images for local development
+
+All containers, including those created by the Docker provider, are organized in the same compose group in the Docker UI for easy management.
+
+### Installation
+
+```bash
+# Install globally
+npm install -g @cusedev/cli
+
+# Or use the installation script
+curl -fsSL https://raw.githubusercontent.com/cusedev/cuse/main/packages/cli/install.sh | bash
 ```
 
-Then read the [docs](https://docs.next-forge.com) for more information.
+### Usage
 
-<a href="https://github.com/haydenbleasel/next-forge/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=haydenbleasel/next-forge" />
-</a>
+```bash
+# Initialize a new project
+cuse init
 
-Made with [contrib.rocks](https://contrib.rocks).
+# Start the stack
+cuse start
+
+# Check status
+cuse status
+
+# Stop the stack
+cuse stop
+```
+
+### Local Development
+
+For local development, you can specify a custom app image in your `cuse.config.yml`:
+
+```yaml
+# Use a custom app image for local development
+appImage: your-local-app-image:latest
+```
+
+We provide a helper script to build a local image:
+
+```bash
+# From the project root
+./packages/cli/scripts/build-local-image.sh
+```
+
+For more information, see the [CLI documentation](packages/cli/README.md).
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT

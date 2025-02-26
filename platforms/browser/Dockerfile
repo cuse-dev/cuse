@@ -1,145 +1,73 @@
-# Use a specific version of bun for better reproducibility
-FROM oven/bun:1.0.29 AS builder
+FROM node:20-bookworm AS base
 
+# Install pnpm in the base image and set up the global bin directory
+RUN npm install -g pnpm
+# Manually set up pnpm directories and environment
+ENV PNPM_HOME=/root/.local/share/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN mkdir -p $PNPM_HOME
+
+# Add metadata labels
 LABEL name="@cuse-dev/cuse/browser"
 LABEL version="0.0.1"
 LABEL description="Browser platform implementation using Playwright"
 
-# Build arguments
-ARG PLAYWRIGHT_VERSION=1.42.1
-ARG DEBIAN_FRONTEND=noninteractive
-
-# Install system dependencies required by Playwright
-RUN apt-get update && apt-get install -y \
-    # Playwright browser dependencies
-    libnss3 \
-    libnspr4 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libdrm2 \
-    libdbus-1-3 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
-    libgbm1 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libasound2 \
-    libatspi2.0-0 \
-    # Additional dependencies for headless Chrome
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxi6 \
-    libxtst6 \
-    libnss3 \
-    libcups2 \
-    libxss1 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    # Additional utilities
-    curl \
-    wget \
-    gnupg \
-    ca-certificates \
-    xvfb \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create and set up the app directory
-WORKDIR /app
-
-# Copy package files
-COPY platforms/browser/package.json ./
-COPY bun.lockb ./
-
-# Install dependencies with network retry logic
-RUN --mount=type=cache,target=/root/.bun \
-    for i in {1..3}; do bun install && break || sleep 5; done
-
-# Copy the rest of the application
-COPY platforms/browser .
-
-# Install Playwright with all browsers and dependencies
-RUN for i in {1..3}; do \
-        echo "Attempt $i: Installing Playwright..." && \
-        bunx playwright@${PLAYWRIGHT_VERSION} install --with-deps && \
-        break || { \
-            echo "Attempt $i failed. Waiting before retry..." && \
-            sleep 10; \
-        }; \
-    done
-
-RUN bunx playwright install 
-    
-# Build the application
-RUN bun run build
-
-
-# Start a new stage for the runtime image
-FROM oven/bun:1.0.29-slim
-
-# Install required runtime dependencies
-RUN apt-get update && apt-get install -y \
-    libnss3 \
-    libnspr4 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libdrm2 \
-    libdbus-1-3 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
-    libgbm1 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libasound2 \
-    libatspi2.0-0 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxi6 \
-    libxtst6 \
-    libnss3 \
-    libcups2 \
-    libxss1 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    xvfb \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy necessary runtime files and dependencies
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/package.json /app/
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /root/.cache/ms-playwright /root/.cache/ms-playwright
-
+FROM base AS builder
 # Set working directory
 WORKDIR /app
+# Install turbo
+RUN npm install -g turbo@^2
+COPY . .
 
-# Expose the port the app runs on
-EXPOSE 8000
+# Generate a partial monorepo with a pruned lockfile for the browser platform
+RUN turbo prune @cusedev/browser --docker
+
+FROM base AS installer
+WORKDIR /app
+
+# First install the dependencies (as they change less often)
+COPY --from=builder /app/out/json/ .
+RUN pnpm install --frozen-lockfile
+
+# Copy the project files
+COPY --from=builder /app/out/full/ .
+
+# Make sure the platform-specific dependencies are installed
+RUN cd platforms/browser && pnpm install --frozen-lockfile
+
+# Install Playwright with all browsers and dependencies
+# Clean up apt cache in the same layer to save space
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends xvfb fonts-freefont-ttf fonts-liberation && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    pnpm install -g playwright && \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install-deps chromium && \
+    playwright install chromium
+
+# Build the project
+RUN pnpm turbo run build --filter=@cusedev/browser...
+
+FROM base AS runner
+WORKDIR /app
+
+# Copy package.json and built files from installer stage
+COPY --from=installer /app/platforms/browser/package.json ./
+COPY --from=installer /app/platforms/browser/dist ./dist
+# Copy all dependencies, including those in node_modules
+COPY --from=installer /app/node_modules ./node_modules
+
+# Make sure we have all necessary dependencies installed
+RUN pnpm install --prod --no-frozen-lockfile
+
+# Install Playwright and Xvfb with minimized layers
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends xvfb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    pnpm install -g playwright && \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install-deps chromium && \
+    playwright install chromium
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -148,15 +76,18 @@ ENV SCREEN_WIDTH=1024
 ENV SCREEN_HEIGHT=768
 ENV SCREEN_DEPTH=24
 
+# Expose the port the app runs on
+EXPOSE 8000
+
 # Create a script to start Xvfb and the application
 RUN echo '#!/bin/sh\n\
 Xvfb $DISPLAY -screen 0 ${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_DEPTH} &\n\
 XVFB_PID=$!\n\
 sleep 2\n\
 echo "Starting application..."\n\
-bun run start\n\
+node ./dist/server/app.js\n\
 kill $XVFB_PID\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
 # Start the application
-CMD ["/app/start.sh"] 
+CMD ["/app/start.sh"]

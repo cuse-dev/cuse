@@ -1,0 +1,54 @@
+version: '3.8'
+name: {{projectName}}
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    ports:
+      - '5432:5432'
+    networks:
+      - cuse-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - {{cliSqlPath}}:/docker-entrypoint-initdb.d:ro
+    labels:
+      com.cuse.project: "{{projectName}}"
+      com.cuse.service: "database"
+      
+  app:
+    image: {{appImage}}
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - DOCKER_SOCKET_PATH=/var/run/docker.sock
+      - BROWSER_IMAGE={{browserImage}}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    depends_on:
+      - db
+    networks:
+      - cuse-network
+    user: root
+    labels:
+      com.cuse.project: "{{projectName}}"
+      com.cuse.service: "application"
+
+volumes:
+  postgres-data:
+    name: "{{projectName}}-postgres-data"
+    labels:
+      com.cuse.project: "{{projectName}}"
+
+networks:
+  cuse-network:
+    name: "{{projectName}}-network"
+    driver: bridge
+    labels:
+      com.cuse.project: "{{projectName}}" 

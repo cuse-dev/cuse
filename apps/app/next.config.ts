@@ -8,4 +8,7 @@ if (env.ANALYZE === 'true') {
   nextConfig = withAnalyzer(nextConfig);
 }
 
-export default nextConfig;
+export default {
+  ...nextConfig,
+  output: 'standalone',
+};

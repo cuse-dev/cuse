@@ -15,16 +15,16 @@ Browser platform implementation for cuse using Playwright. This platform provide
 
 ```bash
 # Install dependencies
-bun install
+pnpm install
 
 # Start development server
-bun run dev
+pnpm dev
 
 # Build for production
-bun run build
+pnpm run build
 
 # Start production server
-bun run start
+pnpm start
 ```
 
 ## API Documentation

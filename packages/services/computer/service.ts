@@ -25,12 +25,14 @@ const DEFAULT_DOCKER_PROVIDER = createDockerProvider(
       id: $Enums.ComputerPlatform.BROWSER,
       name: 'Browser',
       version: 'latest',
-      image: 'cuse-local-browser:latest',
+      image: process.env.BROWSER_IMAGE ?? DEFAULT_BROWSER_IMAGE,
       description: 'Browser',
       defaultResources: { memoryMb: 1024, cpuCount: 1 },
     },
   ],
-  $Enums.ComputerPlatform.LINUX
+  $Enums.ComputerPlatform.LINUX,
+  process.env.DOCKER_NETWORK ?? 'cuse-default',
+  process.env.DOCKER_SOCKET_PATH ?? undefined
 );
 
 export function createComputerService(

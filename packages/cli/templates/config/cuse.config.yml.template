@@ -1,0 +1,19 @@
+project:
+  name: {{projectName}}
+  description: {{projectDescription}}
+
+# Application image to use
+appImage: {{appImage}}
+
+# Provider configuration
+providers:
+  docker:
+    enabled: true
+    browserImage: {{browserImage}}
+    network: {{projectName}}-network
+    
+# Resource defaults
+resources:
+  memoryMb: 4096
+  cpuCount: 4
+  timeoutMs: 300000 

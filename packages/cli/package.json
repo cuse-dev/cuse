@@ -1,0 +1,99 @@
+{
+  "name": "@cusedev/cli",
+  "description": "cuse cli",
+  "version": "0.0.0",
+  "author": "cuse",
+  "bin": {
+    "cuse": "./bin/run.js"
+  },
+  "bugs": "https://github.com/cuse/issues",
+  "dependencies": {
+    "@oclif/core": "^4",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^5",
+    "chalk": "^5.3.0",
+    "cli-progress": "^3.12.0",
+    "cli-table3": "^0.6.3",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.12",
+    "js-yaml": "^4.1.0",
+    "listr2": "^8.0.2",
+    "ora": "^8.0.1",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1",
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^4",
+    "@types/chai": "^4",
+    "@types/cli-progress": "^3.11.5",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^9",
+    "eslint-config-oclif": "^6",
+    "eslint-config-prettier": "^10",
+    "mocha": "^10",
+    "oclif": "^4",
+    "shx": "^0.3.3",
+    "ts-node": "^10",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "dist/sql",
+    "oclif.manifest.json",
+    "templates",
+    "templates/config",
+    "templates/docker-compose",
+    "templates/sql"
+  ],
+  "homepage": "https://github.com/cuse-dev/cuse",
+  "keywords": ["oclif", "cuse", "cli"],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "type": "module",
+  "oclif": {
+    "bin": "cuse",
+    "dirname": "cuse",
+    "commands": "./dist/commands",
+    "plugins": ["@oclif/plugin-help", "@oclif/plugin-plugins"],
+    "topicSeparator": " ",
+    "topics": {
+      "init": {
+        "description": "Initialize cuse in your project"
+      },
+      "start": {
+        "description": "Start cuse services"
+      },
+      "stop": {
+        "description": "Stop cuse services"
+      },
+      "status": {
+        "description": "Check cuse services status"
+      },
+      "db": {
+        "description": "Database management commands"
+      }
+    }
+  },
+  "repository": "https://github.com/cuse-dev/cuse",
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/sql && find ../../packages/database/prisma/migrations -name 'migration.sql' -exec bash -c 'dir=$(basename $(dirname {})); cp {} dist/sql/${dir}-migration.sql' \\; && cp templates/sql/init.sql dist/sql/",
+    "clean": "shx rm -rf dist",
+    "lint": "eslint .",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "pnpm run lint",
+    "prepack": "oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md"
+  },
+  "types": "dist/index.d.ts"
+}

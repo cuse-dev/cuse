@@ -1,66 +1,72 @@
-# syntax=docker.io/docker/dockerfile:1
-
 FROM node:18-alpine AS base
 
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+# Install pnpm in the base image and set up the global bin directory
+RUN npm install -g pnpm
+# Manually set up pnpm directories and environment
+ENV PNPM_HOME=/root/.local/share/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN mkdir -p $PNPM_HOME
+
+FROM base AS builder
+RUN apk update
+RUN apk add --no-cache libc6-compat
+# Set working directory
+WORKDIR /app
+# Install turbo
+RUN npm install -g turbo@^2
+COPY . .
+
+# Generate a partial monorepo with a pruned lockfile for a target workspace.
+# Assuming "app" is the name entered in the project's package.json: { name: "app" }
+RUN turbo prune app --docker
+
+# Add lockfile and package.json's of isolated subworkspace
+FROM base AS installer
+RUN apk update
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY apps/app/package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# First install the dependencies (as they change less often)
+COPY --from=builder /app/out/json/ .
+RUN pnpm install --frozen-lockfile
 
+# Build the project
+COPY --from=builder /app/out/full/ .
+# Add required environment variables for the build
+# These are default values that will be used during build time only
+ENV NEXT_PUBLIC_APP_URL=http://localhost:4242
+ENV NEXT_PUBLIC_WEB_URL=http://localhost:3001
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+# Create public directory if it doesn't exist
+RUN mkdir -p /app/apps/app/public
+RUN pnpm turbo run build --filter=app...
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY apps/app/ .
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED=1
-
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-# Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED=1
-
+# Create non-root user for better security
+# (but we'll decide at runtime whether to use it based on docker-compose.yml)
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
-
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=installer /app/apps/app/.next/standalone ./
+COPY --from=installer /app/apps/app/.next/static ./apps/app/.next/static
+# Copy public directory (will be empty if it didn't exist)
+COPY --from=installer /app/apps/app/public ./apps/app/public
 
-USER nextjs
+# Make sure files are accessible by both root and non-root users
+RUN chown -R nextjs:nodejs /app
 
+# Expose the port that the Next.js app will run on
 EXPOSE 3000
 
-ENV PORT=3000
+# Set runtime environment variables
+# These will be overridden by any environment variables passed at runtime
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+ENV DOCKER_SOCKET_PATH="/var/run/docker.sock"
 
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
-ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+# Note: We're not setting USER here - it will be controlled by docker-compose.yml
+
+CMD ["node", "apps/app/server.js"]
