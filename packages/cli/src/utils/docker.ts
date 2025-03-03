@@ -4,9 +4,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import {
+  ensureProjectDir,
   getConfigPath,
-  getCuseDir,
   getDockerComposePath,
+  getTemplatePath,
   loadConfig,
 } from './config.js';
 
@@ -49,7 +50,7 @@ export async function startServices(projectDir: string): Promise<void> {
   }
 
   try {
-    const { stdout, stderr } = await execAsync(
+    const { stderr } = await execAsync(
       `docker compose -f ${dockerComposePath} up -d`
     );
     if (stderr) {
@@ -73,7 +74,7 @@ export async function stopServices(projectDir: string): Promise<void> {
   }
 
   try {
-    const { stdout, stderr } = await execAsync(
+    const { stderr } = await execAsync(
       `docker compose -f ${dockerComposePath} down`
     );
     if (stderr) {
@@ -124,12 +125,19 @@ export async function generateDockerComposeFile(
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  // Path to the bundled SQL files in the CLI package
-  const cliSqlPath = path.resolve(__dirname, '../sql');
+  // Path to the SQL templates in the CLI package
+  // During development, this will be in the templates directory
+  // After build, this will be in the dist/templates directory
+  let cliSqlPath = path.resolve(__dirname, '../templates/sql');
 
-  const templatePath = path.resolve(
-    __dirname,
-    '../../templates/docker-compose/docker-compose.yml.template'
+  // If the path doesn't exist, try the development path
+  if (!fs.existsSync(cliSqlPath)) {
+    cliSqlPath = path.resolve(__dirname, '../../templates/sql');
+  }
+
+  // Path to the Docker Compose template
+  const templatePath = getTemplatePath(
+    'docker-compose/docker-compose.yml.template'
   );
   const template = await fs.readFile(templatePath, 'utf8');
 
@@ -138,11 +146,11 @@ export async function generateDockerComposeFile(
     .replace(/{{projectName}}/g, config.project.name)
     .replace(/{{appImage}}/g, config.appImage)
     .replace(/{{browserImage}}/g, config.providers.docker.browserImage)
+    .replace(/{{linuxImage}}/g, config.providers.docker.linuxImage)
     .replace(/{{cliSqlPath}}/g, cliSqlPath);
 
-  // Ensure the .cuse directory exists
-  const cuseDir = getCuseDir(projectDir);
-  await fs.ensureDir(cuseDir);
+  // Ensure the project directory exists
+  const projectSpecificDir = await ensureProjectDir(config.project.name);
 
   // Write the Docker Compose file
   const dockerComposePath = getDockerComposePath(projectDir);

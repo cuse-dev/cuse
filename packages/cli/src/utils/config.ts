@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -16,6 +17,7 @@ export interface CuseConfig {
     docker: {
       enabled: boolean;
       browserImage: string;
+      linuxImage: string;
       network: string;
     };
   };
@@ -36,6 +38,7 @@ export const DEFAULT_CONFIG: CuseConfig = {
     docker: {
       enabled: true,
       browserImage: 'ghcr.io/cuse-dev/cuse/browser:latest',
+      linuxImage: 'ghcr.io/cuse-dev/cuse/linux:latest',
       network: 'my-cuse-project-network',
     },
   },
@@ -78,7 +81,15 @@ export async function saveConfig(
  * Get the template path
  */
 export function getTemplatePath(templateName: string): string {
-  return path.resolve(__dirname, '../../templates', templateName);
+  // Try the dist/templates directory first (for production)
+  let templatePath = path.resolve(__dirname, '../templates', templateName);
+
+  // If the template doesn't exist, try the development path
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.resolve(__dirname, '../../templates', templateName);
+  }
+
+  return templatePath;
 }
 
 /**
@@ -112,26 +123,62 @@ export async function isCuseInitialized(projectDir: string): Promise<boolean> {
 }
 
 /**
- * Get the cuse directory path
+ * Get the cuse global directory path
+ * This is where we'll store all cuse-related files
  */
-export function getCuseDir(projectDir: string): string {
-  return path.join(projectDir, '.cuse');
+export function getCuseGlobalDir(): string {
+  return path.join(os.homedir(), '.cuse');
 }
 
 /**
- * Ensure the cuse directory exists
+ * Ensure the cuse global directory exists
  */
-export async function ensureCuseDir(projectDir: string): Promise<string> {
-  const cuseDir = getCuseDir(projectDir);
-  await fs.ensureDir(cuseDir);
-  return cuseDir;
+export async function ensureCuseGlobalDir(): Promise<string> {
+  const cuseGlobalDir = getCuseGlobalDir();
+  await fs.ensureDir(cuseGlobalDir);
+  return cuseGlobalDir;
 }
 
 /**
- * Get the docker-compose file path
+ * Get the project-specific directory within the global cuse directory
+ */
+export function getProjectDir(projectName: string): string {
+  return path.join(getCuseGlobalDir(), 'projects', projectName);
+}
+
+/**
+ * Ensure the project-specific directory exists
+ */
+export async function ensureProjectDir(projectName: string): Promise<string> {
+  const projectDir = getProjectDir(projectName);
+  await fs.ensureDir(projectDir);
+  return projectDir;
+}
+
+/**
+ * Get the docker-compose file path for a project
  */
 export function getDockerComposePath(projectDir: string): string {
-  return path.join(getCuseDir(projectDir), 'docker-compose.yml');
+  // First, get the project name from the config
+  const configPath = getConfigPath(projectDir);
+
+  try {
+    // If the config file doesn't exist, return a default path
+    if (!fs.existsSync(configPath)) {
+      return path.join(getCuseGlobalDir(), 'docker-compose.yml');
+    }
+
+    // Load the config to get the project name
+    const configContent = fs.readFileSync(configPath, 'utf8');
+    const config = yaml.load(configContent) as CuseConfig;
+    const projectName = config.project.name;
+
+    // Return the path to the docker-compose file in the project-specific directory
+    return path.join(getProjectDir(projectName), 'docker-compose.yml');
+  } catch (_error) {
+    // If there's an error, return a default path
+    return path.join(getCuseGlobalDir(), 'docker-compose.yml');
+  }
 }
 
 /**

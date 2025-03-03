@@ -1,9 +1,9 @@
 import { Command } from '@oclif/core';
-import { executeMigrations } from '../../utils/migrations.js';
-import { createSpinner, section, success } from '../../utils/ui.js';
+import { checkDatabaseSchema } from '../../utils/migrations.js';
+import { createSpinner, info, section, success, warn } from '../../utils/ui.js';
 
 export default class DbInit extends Command {
-  static description = 'Initialize or update the database schema';
+  static description = 'Check the database schema initialization status';
 
   static examples = ['<%= config.bin %> db init'];
 
@@ -12,18 +12,29 @@ export default class DbInit extends Command {
   static args = {};
 
   async run(): Promise<void> {
-    section('Initializing database schema');
+    section('Checking database schema');
 
-    // Execute the migrations
-    const migrationSpinner = createSpinner('Executing SQL migrations...');
-    migrationSpinner.start();
+    // Check if the database schema is initialized
+    const schemaSpinner = createSpinner('Checking database schema...');
+    schemaSpinner.start();
 
     try {
-      await executeMigrations();
-      migrationSpinner.succeed('Database schema updated successfully');
-      success('Your database schema is now up to date');
+      const isInitialized = await checkDatabaseSchema();
+
+      if (isInitialized) {
+        schemaSpinner.succeed('Database schema is properly initialized');
+        success('Your database is ready to use');
+      } else {
+        schemaSpinner.warn('Database schema is not initialized');
+        warn(
+          'The database container may need to be restarted to apply the initialization script'
+        );
+        info(
+          'Try running "cuse stop" and then "cuse start" to restart the services'
+        );
+      }
     } catch (err) {
-      migrationSpinner.fail(`Failed to execute SQL migrations: ${err}`);
+      schemaSpinner.fail(`Failed to check database schema: ${err}`);
       this.exit(1);
     }
   }

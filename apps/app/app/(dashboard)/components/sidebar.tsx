@@ -69,7 +69,7 @@ export const GlobalSidebar = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Sidebar
-        className="absolute bg-white! opacity-70 transition-opacity hover:opacity-100 lg:top-[8vh] lg:max-h-[80vh] xl:top-[16vh] xl:max-h-[60vh] "
+        className="absolute border-none bg-white! opacity-70 transition-opacity hover:opacity-100 lg:top-[8vh] lg:max-h-[80vh] xl:top-[16vh] xl:max-h-[60vh]"
         variant="floating"
       >
         {/* <Search /> */}

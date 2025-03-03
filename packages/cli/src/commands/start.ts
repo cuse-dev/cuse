@@ -5,7 +5,7 @@ import {
   checkServicesStatus,
   startServices,
 } from '../utils/docker.js';
-import { executeMigrations } from '../utils/migrations.js';
+import { checkDatabaseSchema } from '../utils/migrations.js';
 import {
   createSpinner,
   error,
@@ -93,22 +93,32 @@ export default class Start extends Command {
     const dbConnected = await checkDatabaseConnection();
 
     if (!dbConnected) {
-      warn('Could not connect to the database. Skipping migrations.');
+      warn('Could not connect to the database. Skipping schema check.');
       return;
     }
 
-    const migrationSpinner = createSpinner('Checking database schema...');
-    migrationSpinner.start();
+    const schemaSpinner = createSpinner('Checking database schema...');
+    schemaSpinner.start();
 
     try {
-      await executeMigrations();
-      migrationSpinner.succeed('Database schema is up to date');
+      const isInitialized = await checkDatabaseSchema();
+
+      if (isInitialized) {
+        schemaSpinner.succeed('Database schema is properly initialized');
+      } else {
+        schemaSpinner.warn('Database schema is not initialized');
+        warn(
+          'The database container may need to be restarted to apply the initialization script'
+        );
+        warn(
+          'Try running "cuse stop" and then "cuse start" to restart the services'
+        );
+      }
     } catch (error) {
-      migrationSpinner.fail(`Failed to run migrations: ${error}`);
+      schemaSpinner.fail(`Failed to check database schema: ${error}`);
       warn(
         'Your application may not function correctly without the proper database schema.'
       );
-      warn('You can manually run migrations with: cuse db init');
     }
   }
 

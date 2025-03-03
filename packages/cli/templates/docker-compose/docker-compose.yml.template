@@ -28,6 +28,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - DOCKER_SOCKET_PATH=/var/run/docker.sock
       - BROWSER_IMAGE={{browserImage}}
+      - LINUX_IMAGE={{linuxImage}}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker

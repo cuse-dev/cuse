@@ -1,10 +1,7 @@
 "use client"
 
-import * as React from "react"
+import { ViewVerticalIcon } from "@radix-ui/react-icons"
 import { Slot } from "@radix-ui/react-slot"
-import { VariantProps, cva } from "class-variance-authority"
-import { useIsMobile } from "@repo/design-system/hooks/use-mobile"
-import { cn } from "@repo/design-system/lib/utils"
 import { Button } from "@repo/design-system/components/ui/button"
 import { Input } from "@repo/design-system/components/ui/input"
 import { Separator } from "@repo/design-system/components/ui/separator"
@@ -16,7 +13,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@repo/design-system/components/ui/tooltip"
-import { ViewVerticalIcon } from "@radix-ui/react-icons"
+import { useIsMobile } from "@repo/design-system/hooks/use-mobile"
+import { cn } from "@repo/design-system/lib/utils"
+import { VariantProps, cva } from "class-variance-authority"
+import * as React from "react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -248,7 +248,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow border-none dark:bg-black"
           >
             {children}
           </div>
@@ -759,5 +759,6 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  useSidebar
 }
+

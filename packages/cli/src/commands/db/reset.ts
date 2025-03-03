@@ -99,7 +99,9 @@ export default class DbReset extends Command {
       spinner.succeed('Database has been reset');
       success('Database has been reset to a clean state');
       info('To start services with the clean database, run: cuse start');
-      info('The SQL migrations will be automatically applied on next startup');
+      info(
+        'The database schema will be automatically initialized on next startup'
+      );
     } catch (err) {
       spinner.fail(`Failed to reset database: ${err}`);
       this.exit(1);

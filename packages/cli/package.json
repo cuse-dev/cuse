@@ -45,16 +45,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "files": [
-    "bin",
-    "dist",
-    "dist/sql",
-    "oclif.manifest.json",
-    "templates",
-    "templates/config",
-    "templates/docker-compose",
-    "templates/sql"
-  ],
+  "files": ["bin", "dist", "oclif.manifest.json"],
   "homepage": "https://github.com/cuse-dev/cuse",
   "keywords": ["oclif", "cuse", "cli"],
   "license": "MIT",
@@ -86,9 +77,9 @@
   },
   "repository": "https://github.com/cuse-dev/cuse",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/sql && find ../../packages/database/prisma/migrations -name 'migration.sql' -exec bash -c 'dir=$(basename $(dirname {})); cp {} dist/sql/${dir}-migration.sql' \\; && cp templates/sql/init.sql dist/sql/",
+    "build": "shx rm -rf dist && tsc -b && shx cp -r templates dist/",
     "clean": "shx rm -rf dist",
-    "lint": "eslint .",
+    "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "pnpm run lint",
     "prepack": "oclif manifest && oclif readme",

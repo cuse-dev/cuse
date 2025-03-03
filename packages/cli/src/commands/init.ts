@@ -17,6 +17,8 @@ export default class Init extends Command {
     '<%= config.bin %> init',
     '<%= config.bin %> init --name my-project',
     '<%= config.bin %> init --app-image my-custom-image:latest',
+    '<%= config.bin %> init --browser-image my-custom-browser:latest',
+    '<%= config.bin %> init --linux-image my-custom-linux:latest',
   ];
 
   static flags = {
@@ -31,11 +33,18 @@ export default class Init extends Command {
       required: false,
     }),
     'app-image': Flags.string({
-      description: 'Application image to use',
+      description:
+        'Application image to use (defaults to ghcr.io/cuse-dev/cuse/app:latest)',
       required: false,
     }),
     'browser-image': Flags.string({
-      description: 'Browser image to use',
+      description:
+        'Browser image to use (defaults to ghcr.io/cuse-dev/cuse/browser:latest)',
+      required: false,
+    }),
+    'linux-image': Flags.string({
+      description:
+        'Linux image to use (defaults to ghcr.io/cuse-dev/cuse/linux:latest)',
       required: false,
     }),
     yes: Flags.boolean({
@@ -93,7 +102,7 @@ export default class Init extends Command {
     // Get project configuration
     const config = { ...DEFAULT_CONFIG };
 
-    // Update config with flags
+    // Update config with flags - images are only set via command arguments
     if (flags.name) {
       config.project.name = flags.name;
     }
@@ -110,7 +119,11 @@ export default class Init extends Command {
       config.providers.docker.browserImage = flags['browser-image'];
     }
 
-    // If not using --yes flag, prompt for missing values
+    if (flags['linux-image']) {
+      config.providers.docker.linuxImage = flags['linux-image'];
+    }
+
+    // If not using --yes flag, prompt for missing values (only for project name and description)
     if (!flags.yes) {
       const answers = await inquirer.prompt([
         {
@@ -127,20 +140,6 @@ export default class Init extends Command {
           default: config.project.description,
           when: !flags.description,
         },
-        {
-          type: 'input',
-          name: 'appImage',
-          message: 'Application image:',
-          default: config.appImage,
-          when: !flags['app-image'],
-        },
-        {
-          type: 'input',
-          name: 'browserImage',
-          message: 'Browser image:',
-          default: config.providers.docker.browserImage,
-          when: !flags['browser-image'],
-        },
       ]);
 
       // Update config with answers
@@ -150,14 +149,6 @@ export default class Init extends Command {
 
       if (answers.description) {
         config.project.description = answers.description;
-      }
-
-      if (answers.appImage) {
-        config.appImage = answers.appImage;
-      }
-
-      if (answers.browserImage) {
-        config.providers.docker.browserImage = answers.browserImage;
       }
     }
 
@@ -186,6 +177,7 @@ export default class Init extends Command {
           await pullImages([
             config.appImage,
             config.providers.docker.browserImage,
+            config.providers.docker.linuxImage,
           ]);
         },
       },

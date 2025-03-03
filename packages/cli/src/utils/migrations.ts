@@ -1,52 +1,15 @@
-import fs from 'fs-extra';
 import { exec } from 'node:child_process';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
 
-// Get the directory name of the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /**
- * Execute migrations directly against a PostgreSQL database
+ * Check if the database schema is properly initialized
+ * This is a simplified version that just checks if the ComputerInstance table exists
  */
-export async function executeMigrations(
+export async function checkDatabaseSchema(
   connectionString = 'postgresql://postgres:postgres@localhost:5432/postgres'
-): Promise<void> {
-  // Path to the SQL migrations in the CLI package - corrected path for npm installation
-  const sqlPath = path.resolve(__dirname, '../sql');
-
-  // Check if SQL directory exists in the CLI package
-  if (!fs.existsSync(sqlPath)) {
-    throw new Error(
-      'SQL directory not found in the CLI package. This is likely a packaging issue with the CLI.'
-    );
-  }
-
-  // Get all SQL files and sort them alphanumerically to ensure order
-  let sqlFiles = fs
-    .readdirSync(sqlPath)
-    .filter((file) => file.endsWith('.sql'))
-    .sort();
-
-  // If no migration files found but init.sql exists, use that
-  if (sqlFiles.length === 0) {
-    const initSqlPath = path.join(sqlPath, 'init.sql');
-    if (fs.existsSync(initSqlPath)) {
-      console.log('No migration files found, using init.sql as fallback');
-      sqlFiles = ['init.sql'];
-    } else {
-      throw new Error(
-        'No SQL migration files found in the CLI package. The build process may have failed.'
-      );
-    }
-  }
-
-  console.log(`Found ${sqlFiles.length} SQL migration files to execute.`);
-
+): Promise<boolean> {
   try {
     // Try to find the database container
     try {
@@ -61,26 +24,12 @@ export async function executeMigrations(
         );
       }
 
-      console.log(`Found database container: ${containerId.trim()}`);
-
-      // Execute each SQL file against the database
-      for (const sqlFile of sqlFiles) {
-        const filePath = path.join(sqlPath, sqlFile);
-        console.log(`Executing SQL file: ${sqlFile}`);
-
-        // Read the SQL content and pipe it directly to PostgreSQL
-        // This avoids creating temporary files in the container
-        const sqlContent = fs.readFileSync(filePath, 'utf8');
-
-        // Use a more reliable method than echo to pipe the SQL content
-        await execAsync(
-          `cat "${filePath}" | docker exec -i ${containerId.trim()} psql -U postgres -d postgres`
-        );
-      }
-
-      console.log(
-        'All SQL migrations executed successfully via Docker container.'
+      // Check if the ComputerInstance table exists
+      const { stdout } = await execAsync(
+        `docker exec -i ${containerId.trim()} psql -U postgres -d postgres -t -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ComputerInstance')"`
       );
+
+      return stdout.trim() === 't';
     } catch (dockerError) {
       // Fallback to local psql if Docker container execution failed
       console.log(
@@ -107,22 +56,14 @@ export async function executeMigrations(
         );
       }
 
-      // Execute each SQL file against the database using local psql
-      for (const sqlFile of sqlFiles) {
-        const filePath = path.join(sqlPath, sqlFile);
-        console.log(`Executing SQL file via direct connection: ${sqlFile}`);
-
-        // Use PSQL with a file input instead of echo to avoid command injection or escaping issues
-        await execAsync(
-          `PGPASSWORD=${password} psql -h ${host} -p ${port} -U ${user} -d ${database} -f "${filePath}"`
-        );
-      }
-
-      console.log(
-        'All SQL migrations executed successfully via direct connection.'
+      // Check if the ComputerInstance table exists using local psql
+      const { stdout } = await execAsync(
+        `PGPASSWORD=${password} psql -h ${host} -p ${port} -U ${user} -d ${database} -t -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ComputerInstance')"`
       );
+
+      return stdout.trim() === 't';
     }
   } catch (error) {
-    throw new Error(`Failed to execute SQL migrations: ${error}`);
+    throw new Error(`Failed to check database schema: ${error}`);
   }
 }
